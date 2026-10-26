@@ -52,6 +52,8 @@ npm run start
 └── package.json
 ```
 
+> 每个目录下都有 `AGENTS.md`，描述该目录的职责、关键约束与常见改动位置，供 AI 编码助手检索。建议从根目录 [AGENTS.md](AGENTS.md) 开始阅读。
+
 ## 常用命令
 
 ```bash
