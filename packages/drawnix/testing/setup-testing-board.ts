@@ -38,6 +38,7 @@ const createTestingAppState = (overrides: DrawnixTestingAppStateOverrides = {}):
     fileHandle: null,
     openDialogType: null,
     openCleanConfirm: false,
+    agentPanelOpen: false,
     copyTransparent: false,
     exportTransparent: false,
     ...stateOverrides,

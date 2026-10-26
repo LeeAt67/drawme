@@ -12,6 +12,7 @@ import {
   FeltTipPenIcon,
   ImageIcon,
   ExtraToolsIcon,
+  SparklesIcon,
 } from '../icons';
 import { useBoard } from '@plait-board/react-board';
 import {
@@ -423,6 +424,23 @@ export const CreationToolbar = () => {
             />
           );
         })}
+        <span className="draw-toolbar__divider" aria-hidden="true" />
+        <ToolButton
+          key="agent"
+          type="icon"
+          visible={true}
+          className="draw-toolbar__agent"
+          icon={SparklesIcon}
+          selected={appState.agentPanelOpen}
+          title={appState.agentPanelOpen ? t('agent.close') : t('agent.open')}
+          aria-label={appState.agentPanelOpen ? t('agent.close') : t('agent.open')}
+          onClick={() => {
+            setAppState((currentAppState) => ({
+              ...currentAppState,
+              agentPanelOpen: !currentAppState.agentPanelOpen,
+            }));
+          }}
+        />
       </Stack.Row>
     </Island>
   );

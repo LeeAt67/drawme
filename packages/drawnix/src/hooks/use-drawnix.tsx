@@ -78,6 +78,7 @@ export type DrawnixState = {
   fileHandle: DrawnixFileHandle;
   openDialogType: DialogType | null;
   openCleanConfirm: boolean;
+  agentPanelOpen: boolean;
   copyTransparent: boolean;
   exportTransparent: boolean;
   linkState?: LinkState | null;

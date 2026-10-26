@@ -57,6 +57,29 @@
 - 📱 Mobile-friendly
 - 📈 Support mermaid syntax conversion to flowchart
 - ✨ Support markdown text conversion to mind map（New 🔥🔥🔥）
+- 🤖 DrawMe Agent: create diagrams from natural language and insert them directly
+
+
+## DrawMe Agent
+
+This project adds DrawMe Agent on top of the Drawnix whiteboard. Open the Agent from the ✨ button in the top-right toolbar, describe what you want, and the agent calls the `create_diagram` tool to generate a Mermaid flowchart or Markdown mind map and insert it into the current canvas.
+
+Highlights:
+
+- Multi-turn chat, tool calling, stop generation, and cascading insertion of multiple diagrams
+- OpenAI Chat Completions compatible endpoints with OpenAI, DeepSeek, and Ollama presets
+- Accepts either an API base URL or a full `/chat/completions` URL
+
+Run locally:
+
+```bash
+npm install
+npm run start
+```
+
+Open the app, click the ✨ button in the toolbar, then enter the API URL, model name, and API key under model settings. The API key can be empty for local models.
+
+> **Security note**: The current implementation calls the model provider directly from the browser and stores settings under the `drawnix.agent.provider` key in `localStorage`. This is intended for local development or personal use only. For production, proxy model requests through a backend so end users are never exposed to the API key. A proxy is also required when the provider blocks browser requests with CORS.
 
 
 ## About the Name

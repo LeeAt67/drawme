@@ -46,6 +46,7 @@ import type { Language } from './i18n/types';
 import { Tutorial } from './components/tutorial';
 import { LASER_POINTER_CLASS_NAME } from './utils/laser-pointer';
 import { Toast, useToast } from './components/toast/toast';
+import { AgentPanel } from './agent/agent-panel';
 
 export type DrawnixProps = {
   value: PlaitElement[];
@@ -118,6 +119,7 @@ export const Drawnix: React.FC<DrawnixProps> = ({
       fileHandle: null,
       openDialogType: null,
       openCleanConfirm: false,
+      agentPanelOpen: false,
       copyTransparent: initialPreference?.copyTransparent ?? false,
       exportTransparent: initialPreference?.exportTransparent ?? false,
     };
@@ -265,6 +267,7 @@ export const Drawnix: React.FC<DrawnixProps> = ({
             <PopupToolbar></PopupToolbar>
             <LinkPopup></LinkPopup>
             <ClosePencilToolbar></ClosePencilToolbar>
+            <AgentPanel></AgentPanel>
             <TTDDialog container={containerRef.current}></TTDDialog>
             <CleanConfirm container={containerRef.current}></CleanConfirm>
             <Toast toast={toast} container={containerRef.current}></Toast>

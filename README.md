@@ -57,6 +57,29 @@
 - 📱 移动设备适配
 - 📈 支持 mermaid 语法转流程图
 - ✨ 支持 markdown 文本转思维导图（新支持 🔥🔥🔥）
+- 🤖 DrawMe Agent：用自然语言生成图表并直接插入画布
+
+
+## DrawMe Agent
+
+本项目在 Drawnix 白板基础上增加了 DrawMe Agent。点击右上角工具栏的 ✨ 按钮打开 Agent，用自然语言描述需求，Agent 会调用 `create_diagram` 工具生成 Mermaid 流程图或 Markdown 思维导图，并直接插入当前画布。
+
+主要能力：
+
+- 支持多轮对话、工具调用、停止生成和多个图表的级联插入
+- 兼容 OpenAI Chat Completions 接口，内置 OpenAI、DeepSeek、Ollama 预设
+- 模型地址支持填写 API Base URL，或完整的 `/chat/completions` 地址
+
+本地使用：
+
+```bash
+npm install
+npm run start
+```
+
+打开页面后点击工具栏的 ✨ 按钮，在“模型设置”中填写 API 地址、模型名称和 API Key。API Key 可留空以连接本地模型。
+
+> **安全说明**：当前实现从浏览器直接请求模型服务，并将配置保存在 `localStorage` 的 `drawnix.agent.provider` 中，仅适合本地开发或个人使用。生产环境应通过服务端代理模型请求，避免向终端用户暴露 API Key。若模型服务不支持浏览器跨域请求（CORS），也需要使用代理。
 
 
 ## 关于名称

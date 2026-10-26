@@ -597,3 +597,58 @@ export const FontSizeStepperDownIcon: React.FC<React.SVGProps<SVGSVGElement>> = 
     </svg>
   );
 };
+
+export const SparklesIcon = createIcon(
+  <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path
+      d="M10 2.5L11.35 6.15L15 7.5L11.35 8.85L10 12.5L8.65 8.85L5 7.5L8.65 6.15L10 2.5Z"
+      stroke="currentColor"
+      strokeWidth="1.35"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M15.5 12.5L16.15 14.35L18 15L16.15 15.65L15.5 17.5L14.85 15.65L13 15L14.85 14.35L15.5 12.5Z"
+      fill="currentColor"
+    />
+    <path
+      d="M4.5 12L5 13.5L6.5 14L5 14.5L4.5 16L4 14.5L2.5 14L4 13.5L4.5 12Z"
+      fill="currentColor"
+    />
+  </svg>
+);
+
+export const SettingsIcon = createIcon(
+  <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="8" cy="8" r="2.25" stroke="currentColor" strokeWidth="1.3" />
+    <path
+      d="M6.8 2.2H9.2L9.55 3.55C9.85 3.65 10.13 3.78 10.39 3.94L11.72 3.48L12.92 5.56L11.94 6.52C11.98 6.67 12 6.83 12 7H13.8V9H12C12 9.17 11.98 9.33 11.94 9.48L12.92 10.44L11.72 12.52L10.39 12.06C10.13 12.22 9.85 12.35 9.55 12.45L9.2 13.8H6.8L6.45 12.45C6.15 12.35 5.87 12.22 5.61 12.06L4.28 12.52L3.08 10.44L4.06 9.48C4.02 9.33 4 9.17 4 9H2.2V7H4C4 6.83 4.02 6.67 4.06 6.52L3.08 5.56L4.28 3.48L5.61 3.94C5.87 3.78 6.15 3.65 6.45 3.55L6.8 2.2Z"
+      stroke="currentColor"
+      strokeWidth="1.2"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+export const SendIcon = createIcon(
+  <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path
+      d="M2.2 7.35L13.3 2.2L10.03 13.8L7.62 8.9L2.2 7.35Z"
+      stroke="currentColor"
+      strokeWidth="1.35"
+      strokeLinejoin="round"
+    />
+    <path d="M7.62 8.9L9.75 6.75" stroke="currentColor" strokeWidth="1.35" />
+  </svg>
+);
+
+export const StopIcon = createIcon(
+  <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="4" y="4" width="8" height="8" rx="1.2" fill="currentColor" />
+  </svg>
+);
+
+export const CloseIcon = createIcon(
+  <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M4 4L12 12M12 4L4 12" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+  </svg>
+);

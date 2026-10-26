@@ -163,6 +163,42 @@ export interface Translations {
   'mind.centralText': string;
   'mind.abstractNodeText': string;
 
+  // DrawMe Agent
+  'agent.open': string;
+  'agent.title': string;
+  'agent.subtitle': string;
+  'agent.close': string;
+  'agent.settings': string;
+  'agent.settings.title': string;
+  'agent.settings.description': string;
+  'agent.settings.presets': string;
+  'agent.settings.baseUrl': string;
+  'agent.settings.model': string;
+  'agent.settings.apiKey': string;
+  'agent.settings.apiKeyPlaceholder': string;
+  'agent.settings.invalid': string;
+  'agent.settings.save': string;
+  'agent.settings.cancel': string;
+  'agent.settings.saved': string;
+  'agent.empty.title': string;
+  'agent.empty.description': string;
+  'agent.placeholder': string;
+  'agent.composer.hint': string;
+  'agent.send': string;
+  'agent.stop': string;
+  'agent.thinking': string;
+  'agent.tool.inserting': string;
+  'agent.tool.inserted': string;
+  'agent.tool.failed': string;
+  'agent.toast.inserted': string;
+  'agent.error.request': string;
+  'agent.error.aborted': string;
+  'agent.message.you': string;
+  'agent.message.agent': string;
+  'agent.suggestion.flow': string;
+  'agent.suggestion.architecture': string;
+  'agent.suggestion.retro': string;
+
   'tutorial.title': string;
   'tutorial.description': string;
   'tutorial.dataDescription': string;

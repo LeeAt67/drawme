@@ -24,6 +24,38 @@
         transform: translateX(-50%);
         @include isMobile {
             top: 20px;
+            max-width: calc(100% - 24px);
+            overflow-x: auto;
+            scrollbar-width: none;
+
+            &::-webkit-scrollbar {
+                display: none;
+            }
+        }
+
+        .draw-toolbar__divider {
+            align-self: center;
+            width: 1px;
+            height: 24px;
+            margin: 0 2px;
+            background-color: var(--color-border-outline-variant);
+            opacity: 0.7;
+        }
+
+        .draw-toolbar__agent {
+            background: linear-gradient(
+                135deg,
+                rgba(102, 152, 255, 0.16),
+                rgba(102, 152, 255, 0.04)
+            );
+
+            .tool-icon__icon {
+                color: var(--color-primary);
+            }
+
+            &.tool-icon--selected {
+                background: var(--color-surface-primary-container);
+            }
         }
     }
     .zoom-toolbar {
