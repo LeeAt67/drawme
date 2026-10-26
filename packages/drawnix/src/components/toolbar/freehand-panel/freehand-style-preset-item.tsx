@@ -7,7 +7,7 @@ import Stack from '../../stack';
 import { SizeSlider } from '../../size-slider';
 import { useI18n } from '../../../i18n';
 import { ColorPicker } from '../../color-picker';
-import { useBoard } from '@plait-board/react-board';
+import { useBoard } from '@drawme/react-board';
 import { getFreehandDefaultStrokeColor } from '../../../plugins/freehand/utils';
 import {
   FREEHAND_STROKE_WIDTH_STEP,

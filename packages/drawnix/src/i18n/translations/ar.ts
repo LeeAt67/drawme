@@ -94,7 +94,7 @@ const arTranslations: Translations = {
   'menu.github': 'غيت هب',
 
   // Dialog translations
-  'dialog.mermaid.title': 'من Mermaid إلى Drawnix',
+  'dialog.mermaid.title': 'من Mermaid إلى DrawMe',
   'dialog.mermaid.description': 'يدعم حاليًا',
   'dialog.mermaid.flowchart': 'المخططات الانسيابية',
   'dialog.mermaid.sequence': 'مخططات التسلسل',
@@ -112,8 +112,8 @@ const arTranslations: Translations = {
   'dialog.error.loadMermaid': 'فشل في تحميل مكتبة Mermaid',
 
   // Extra tools menu items
-  'extraTools.mermaidToDrawnix': 'من Mermaid إلى Drawnix',
-  'extraTools.markdownToDrawnix': 'من Markdown إلى Drawnix',
+  'extraTools.mermaidToDrawnix': 'من Mermaid إلى DrawMe',
+  'extraTools.markdownToDrawnix': 'من Markdown إلى DrawMe',
 
   // Clean confirm dialog
   'cleanConfirm.title': 'مسح اللوحة',
@@ -214,7 +214,7 @@ const arTranslations: Translations = {
   'agent.suggestion.architecture': 'نظّم بنية منتج SaaS في خريطة ذهنية',
   'agent.suggestion.retro': 'ارسم مخططًا انسيابيًا لعناصر عمل المراجعة',
 
-  'tutorial.title': 'Drawnix',
+  'tutorial.title': 'DrawMe',
   'tutorial.description':
     'سبورة شاملة تتضمن الخرائط الذهنية والمخططات الانسيابية والرسم الحر وغير ذلك',
   'tutorial.dataDescription': 'تُحفظ جميع البيانات محليًا في متصفحك',

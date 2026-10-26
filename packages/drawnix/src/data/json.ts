@@ -32,7 +32,7 @@ export const saveJSON = async (
   const fileHandle = await fileSave(blob, {
     name,
     extension: 'drawnix',
-    description: 'Drawnix file',
+    description: 'DrawMe file',
     fileHandle: existingFileHandle,
   });
   return { fileHandle };
@@ -40,7 +40,7 @@ export const saveJSON = async (
 
 export const loadFromJSON = async (board: PlaitBoard) => {
   const file = await fileOpen({
-    description: 'Drawnix files',
+    description: 'DrawMe files',
     // ToDo: Be over-permissive until https://bugs.webkit.org/show_bug.cgi?id=34442
     // gets resolved. Else, iOS users cannot open `.drawnix` files.
     // extensions: ["json", "drawnix", "png", "svg"],

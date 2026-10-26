@@ -1,0 +1,15 @@
+DrawMe
+
+Copyright (c) 2026 DrawMe
+
+This product includes software derived from Drawnix
+(https://github.com/plait-board/drawnix), which is licensed under the MIT License:
+
+  Copyright (c) 2024 Drawnix
+
+The full MIT License text is provided in the LICENSE file in this repository and
+applies to the derived portions of this software.
+
+Third-party components remain under their respective licenses. See the license
+files shipped with each dependency, including Plait, Slate, Floating UI, React,
+Mermaid, KaTeX, roughjs, localforage, and mobile-detect.

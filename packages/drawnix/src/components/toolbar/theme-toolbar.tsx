@@ -1,4 +1,4 @@
-import { useBoard } from '@plait-board/react-board';
+import { useBoard } from '@drawme/react-board';
 import classNames from 'classnames';
 import { ATTACHED_ELEMENT_CLASS_NAME, BoardTransforms, ThemeColorMode } from '@plait/core';
 import { Island } from '../island';

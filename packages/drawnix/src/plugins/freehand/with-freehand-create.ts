@@ -12,7 +12,7 @@ import { createFreehandElement, getFreehandDrawOptions, getFreehandPointers } fr
 import { Freehand, FreehandShape } from './type';
 import { FreehandGenerator } from './freehand.generator';
 import { FreehandSmoother } from './smoother';
-import { isTwoFingerMode } from '@plait-board/react-board';
+import { isTwoFingerMode } from '@drawme/react-board';
 
 export const withFreehandCreate = (board: PlaitBoard) => {
   const { pointerDown, pointerMove, pointerUp, globalPointerUp, touchStart } = board;

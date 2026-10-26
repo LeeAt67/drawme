@@ -3,7 +3,7 @@ import { Island } from './island';
 import Stack from './stack';
 import { ToolButton } from './tool-button';
 import { LineIcon, ArrowIcon } from './icons';
-import { useBoard } from '@plait-board/react-board';
+import { useBoard } from '@drawme/react-board';
 import { ATTACHED_ELEMENT_CLASS_NAME } from '@plait/core';
 import React from 'react';
 import { PropertyTransforms } from '@plait/common';

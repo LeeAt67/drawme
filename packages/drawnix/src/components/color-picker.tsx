@@ -8,7 +8,7 @@ import React from 'react';
 import { SizeSlider } from './size-slider';
 import { DEFAULT_COLOR, isNullOrUndefined, MERGING, PlaitHistoryBoard } from '@plait/core';
 import { CLASSIC_COLORS, NO_COLOR, TRANSPARENT, WHITE } from '../constants/color';
-import { useBoard } from '@plait-board/react-board';
+import { useBoard } from '@drawme/react-board';
 import { Translations, useI18n } from '../i18n';
 
 const ROWS_CLASSIC_COLORS = splitRows(CLASSIC_COLORS, 4);

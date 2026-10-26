@@ -95,7 +95,7 @@ const viTranslations: Translations = {
   'menu.github': 'GitHub',
 
   // Dialog translations
-  'dialog.mermaid.title': 'Mermaid sang Drawnix',
+  'dialog.mermaid.title': 'Mermaid sang DrawMe',
   'dialog.mermaid.description': 'Hiện hỗ trợ',
   'dialog.mermaid.flowchart': 'lưu đồ',
   'dialog.mermaid.sequence': 'biểu đồ tuần tự',
@@ -113,8 +113,8 @@ const viTranslations: Translations = {
   'dialog.error.loadMermaid': 'Không thể tải thư viện Mermaid',
 
   // Extra tools menu items
-  'extraTools.mermaidToDrawnix': 'Mermaid sang Drawnix',
-  'extraTools.markdownToDrawnix': 'Markdown sang Drawnix',
+  'extraTools.mermaidToDrawnix': 'Mermaid sang DrawMe',
+  'extraTools.markdownToDrawnix': 'Markdown sang DrawMe',
 
   // Clean confirm dialog
   'cleanConfirm.title': 'Xóa bảng',

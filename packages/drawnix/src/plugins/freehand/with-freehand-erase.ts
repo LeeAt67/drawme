@@ -12,7 +12,7 @@ import { isDrawingMode } from '@plait/common';
 import { isHitFreehand } from './utils';
 import { Freehand, FreehandShape } from './type';
 import { LaserPointer } from '../../utils/laser-pointer';
-import { isTwoFingerMode } from '@plait-board/react-board';
+import { isTwoFingerMode } from '@drawme/react-board';
 
 export const withFreehandErase = (board: PlaitBoard) => {
   const { pointerDown, pointerMove, pointerUp, globalPointerUp, touchStart } = board;

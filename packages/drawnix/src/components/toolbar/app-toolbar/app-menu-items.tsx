@@ -1,9 +1,8 @@
-import { ExportImageIcon, GithubIcon, OpenFileIcon, SaveFileIcon, TrashIcon } from '../../icons';
-import { useBoard, useListRender } from '@plait-board/react-board';
+import { ExportImageIcon, OpenFileIcon, SaveFileIcon, TrashIcon } from '../../icons';
+import { useBoard, useListRender } from '@drawme/react-board';
 import { BoardTransforms, PlaitBoard, PlaitElement, PlaitTheme, Viewport } from '@plait/core';
 import { loadFromJSON, saveAsJSON, saveJSON } from '../../../data/json';
 import MenuItem from '../../menu/menu-item';
-import MenuItemLink from '../../menu/menu-item-link';
 import { saveAsPng, saveAsSvg } from '../../../utils/image';
 import { useDrawnix } from '../../../hooks/use-drawnix';
 import { useI18n } from '../../../i18n';
@@ -191,16 +190,3 @@ export const CleanBoard = () => {
   );
 };
 CleanBoard.displayName = 'CleanBoard';
-
-export const Socials = () => {
-  return (
-    <MenuItemLink
-      icon={GithubIcon}
-      href="https://github.com/plait-board/drawnix"
-      aria-label="GitHub"
-    >
-      GitHub
-    </MenuItemLink>
-  );
-};
-Socials.displayName = 'Socials';

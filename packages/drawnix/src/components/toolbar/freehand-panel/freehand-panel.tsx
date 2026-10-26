@@ -5,7 +5,7 @@ import { ToolButton } from '../../tool-button';
 import { BoardTransforms, PlaitBoard } from '@plait/core';
 import React from 'react';
 import { BoardCreationMode, setCreationMode } from '@plait/common';
-import { useBoard } from '@plait-board/react-board';
+import { useBoard } from '@drawme/react-board';
 import { DrawnixPointerType } from '../../../hooks/use-drawnix';
 import { useI18n } from '../../../i18n';
 import { FreehandShape } from '../../../plugins/freehand/type';

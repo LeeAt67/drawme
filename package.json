@@ -1,5 +1,5 @@
 {
-  "name": "@drawnix/source",
+  "name": "@drawme/source",
   "version": "0.0.2",
   "private": true,
   "license": "MIT",
@@ -11,8 +11,7 @@
     "format:check": "oxfmt --check",
     "build:web": "nx build web",
     "test": "nx run-many -t=test",
-    "release": "node scripts/release-version.js",
-    "pub": "npm run build && node scripts/publish.js"
+    "release": "node scripts/release-version.js"
   },
   "dependencies": {
     "@floating-ui/react": "^0.26.24",

@@ -11,7 +11,7 @@ import { Transforms } from 'slate';
 import { ReactEditor } from 'slate-react';
 import { LinkEditor } from '@plait/text-plugins';
 import { LinkElement } from '@plait/common';
-import { useBoard } from '@plait-board/react-board';
+import { useBoard } from '@drawme/react-board';
 import { useI18n } from '../../../i18n';
 
 export const LinkPopup = () => {

@@ -17,7 +17,7 @@ import { BoardTransforms, PlaitBoard } from '@plait/core';
 import React from 'react';
 import { BoardCreationMode, setCreationMode } from '@plait/common';
 import { BasicShapes, DrawPointerType, FlowchartSymbols } from '@plait/draw';
-import { useBoard } from '@plait-board/react-board';
+import { useBoard } from '@drawme/react-board';
 import { Translations, useI18n } from '../i18n';
 import { splitRows } from '../utils/common';
 

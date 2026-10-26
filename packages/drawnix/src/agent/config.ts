@@ -1,6 +1,6 @@
 import type { AgentProviderConfig } from './types';
 
-export const AGENT_PROVIDER_STORAGE_KEY = 'drawnix.agent.provider';
+export const AGENT_PROVIDER_STORAGE_KEY = 'drawme.agent.provider';
 
 export const DEFAULT_AGENT_PROVIDER_CONFIG: AgentProviderConfig = {
   baseUrl: 'https://api.openai.com/v1',

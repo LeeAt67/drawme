@@ -34,7 +34,7 @@ export function buildAgentSystemPrompt({
   }
 
   return [
-    'You are DrawMe Agent, a diagramming assistant embedded in the Drawnix whiteboard.',
+    'You are DrawMe Agent, a diagramming assistant embedded in the DrawMe whiteboard.',
     'Your job is to turn natural-language requests into diagrams that can be inserted directly into the canvas.',
     '',
     'Rules:',

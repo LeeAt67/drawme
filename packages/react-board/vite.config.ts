@@ -56,7 +56,7 @@ export default defineConfig({
         '@plait/text-plugins',
         'ahooks',
         'classnames',
-        '@plait-board/react-text',
+        '@drawme/react-text',
         'roughjs/bin/rough',
         'slate-react',
       ],

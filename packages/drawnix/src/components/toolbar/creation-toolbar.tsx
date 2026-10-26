@@ -14,7 +14,7 @@ import {
   ExtraToolsIcon,
   SparklesIcon,
 } from '../icons';
-import { useBoard } from '@plait-board/react-board';
+import { useBoard } from '@drawme/react-board';
 import {
   ATTACHED_ELEMENT_CLASS_NAME,
   BoardTransforms,

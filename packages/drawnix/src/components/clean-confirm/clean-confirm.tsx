@@ -1,7 +1,7 @@
 import { Dialog, DialogContent } from '../dialog/dialog';
 import { useDrawnix } from '../../hooks/use-drawnix';
 import './clean-confirm.scss';
-import { useBoard } from '@plait-board/react-board';
+import { useBoard } from '@drawme/react-board';
 import { useI18n } from '../../i18n';
 
 export const CleanConfirm = ({ container }: { container: HTMLElement | null }) => {

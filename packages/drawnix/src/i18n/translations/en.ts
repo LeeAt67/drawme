@@ -93,7 +93,7 @@ const enTranslations: Translations = {
   'menu.github': 'GitHub',
 
   // Dialog translations
-  'dialog.mermaid.title': 'Mermaid to Drawnix',
+  'dialog.mermaid.title': 'Mermaid to DrawMe',
   'dialog.mermaid.description': 'Currently supports',
   'dialog.mermaid.flowchart': 'flowcharts',
   'dialog.mermaid.sequence': 'sequence diagrams',
@@ -111,8 +111,8 @@ const enTranslations: Translations = {
   'dialog.error.loadMermaid': 'Failed to load Mermaid library',
 
   // Extra tools menu items
-  'extraTools.mermaidToDrawnix': 'Mermaid to Drawnix',
-  'extraTools.markdownToDrawnix': 'Markdown to Drawnix',
+  'extraTools.mermaidToDrawnix': 'Mermaid to DrawMe',
+  'extraTools.markdownToDrawnix': 'Markdown to DrawMe',
 
   // Clean confirm dialog
   'cleanConfirm.title': 'Clear Board',
@@ -213,7 +213,7 @@ const enTranslations: Translations = {
   'agent.suggestion.architecture': 'Map a SaaS product architecture as a mind map',
   'agent.suggestion.retro': 'Draw a flowchart for retrospective action items',
 
-  'tutorial.title': 'Drawnix',
+  'tutorial.title': 'DrawMe',
   'tutorial.description':
     'All-in-one whiteboard, including mind maps, flowcharts, free drawing, and more',
   'tutorial.dataDescription': 'All data is stored locally in your browser',

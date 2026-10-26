@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Drawnix, DrawnixToolState } from '@drawnix/drawnix';
+import { Drawnix, DrawnixToolState } from '@drawme/drawnix';
 import { PlaitElement, PlaitTheme, Viewport } from '@plait/core';
 import localforage from 'localforage';
 

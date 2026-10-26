@@ -3,7 +3,7 @@ import { Island } from './island';
 import Stack from './stack';
 import { ToolButton } from './tool-button';
 import { StraightArrowIcon, ElbowArrowIcon, CurveArrowIcon } from './icons';
-import { useBoard } from '@plait-board/react-board';
+import { useBoard } from '@drawme/react-board';
 import { Translations, useI18n } from '../i18n';
 import { BoardTransforms, PlaitBoard } from '@plait/core';
 import React from 'react';

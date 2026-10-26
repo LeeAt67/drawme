@@ -48,7 +48,7 @@ export default defineConfig({
         'react-dom',
         'react-dom/client',
         'react/jsx-runtime',
-        '@plait-board/react-board',
+        '@drawme/react-board',
         '@plait-board/mermaid-to-drawnix',
         '@plait-board/markdown-to-drawnix',
         'classnames',

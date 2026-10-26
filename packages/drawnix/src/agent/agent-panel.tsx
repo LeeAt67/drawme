@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { getSelectedElements } from '@plait/core';
-import { useBoard } from '@plait-board/react-board';
+import { useBoard } from '@drawme/react-board';
 import { useDrawnix } from '../hooks/use-drawnix';
 import { useI18n } from '../i18n';
 import { CloseIcon, SendIcon, SettingsIcon, SparklesIcon, StopIcon } from '../components/icons';

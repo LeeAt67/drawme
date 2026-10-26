@@ -1,171 +1,77 @@
+<h2 align="center">DrawMe · AI Whiteboard &amp; Mind Mapping</h2>
+
 <p align="center">
-  <picture style="width: 320px">
-    <source media="(prefers-color-scheme: light)" srcset="https://github.com/plait-board/drawnix/blob/develop/apps/web/public/logo/logo_drawnix_h.svg?raw=true" />
-    <source media="(prefers-color-scheme: dark)" srcset="https://github.com/plait-board/drawnix/blob/develop/apps/web/public/logo/logo_drawnix_h_dark.svg?raw=true" />
-    <img src="https://github.com/plait-board/drawnix/blob/develop/apps/web/public/logo/logo_drawnix_h.svg?raw=true" width="360" alt="Drawnix logo and name" />
-  </picture>
+  An all-in-one whiteboard with mind maps, flowcharts, freehand drawing, and DrawMe Agent for natural-language diagram generation.
 </p>
-<div align="center">
-  <h2>
-    Open-source whiteboard tool (SaaS), an all-in-one collaborative canvas that includes mind mapping, flowcharts, freehand and more.
-  <br />
-  </h2>
-</div>
-
-<div align="center">
-  <figure>
-    <a target="_blank" rel="noopener">
-      <img src="https://github.com/plait-board/drawnix/blob/develop/apps/web/public/product_showcase/case-2.png" alt="Product showcase" width="80%" />
-    </a>
-    <figcaption>
-      <p align="center">
-      Whiteboard with mind mapping, flowcharts, freehand drawing and more
-      </p>
-    </figcaption>
-  </figure>
-  <a href="https://hellogithub.com/repository/plait-board/drawnix" target="_blank">
-    <picture style="width: 250">
-      <source media="(prefers-color-scheme: light)" srcset="https://abroad.hellogithub.com/v1/widgets/recommend.svg?rid=4dcea807fab7468a962c153b07ae4e4e&claim_uid=zmFSY5k8EuZri43&theme=neutral" />
-      <source media="(prefers-color-scheme: dark)" srcset="https://abroad.hellogithub.com/v1/widgets/recommend.svg?rid=4dcea807fab7468a962c153b07ae4e4e&claim_uid=zmFSY5k8EuZri43&theme=dark" />
-      <img src="https://abroad.hellogithub.com/v1/widgets/recommend.svg?rid=4dcea807fab7468a962c153b07ae4e4e&claim_uid=zmFSY5k8EuZri43&theme=neutral" alt="Featured｜HelloGitHub" style="width: 250px; height: 54px;" width="250" height="54"/>
-    </picture>
-  </a>
-
-  <br />
-
-  <a href="https://trendshift.io/repositories/13979" target="_blank"><img src="https://trendshift.io/api/badge/repositories/13979" alt="plait-board%2Fdrawnix | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
-
-  <br />
-
-  <a href="https://atomgit.com/plait-board/drawnix" target="_blank"><img src="https://atomgit.com/plait-board/drawnix/star/new_badge.svg" alt="AtomGit G-Star" height="54" /></a>
-</div>
-
-[*中文*](https://github.com/plait-board/drawnix/blob/develop/README.md)
 
 ## Features
 
-- 💯 Free and Open Source
-- ⚒️ Mind Maps and Flowcharts
-- 🖌 Freehand
-- 😀 Image Support
-- 🚀 Plugin-based Architecture - Extensible
-- 🖼️ 📃 Export to PNG, JPG, JSON(.drawnix)
-- 💾 Auto-save (Browser Storage)
-- ⚡ Edit Features: Undo, Redo, Copy, Paste, etc.
-- 🌌 Infinite Canvas: Zoom, Pan
-- 🎨 Theme Support
-- 📱 Mobile-friendly
-- 📈 Support mermaid syntax conversion to flowchart
-- ✨ Support markdown text conversion to mind map（New 🔥🔥🔥）
-- 🤖 DrawMe Agent: create diagrams from natural language and insert them directly
+- 🧠 Mind maps, flowcharts, and freehand drawing
+- 🖼️ Insert images, export PNG / SVG / JSON
+- 💾 Auto-save in browser storage
+- 🌌 Infinite canvas with zoom and scroll
+- 🎨 Multiple themes with mobile support
+- 📈 Mermaid to flowchart
+- ✨ Markdown to mind map
+- 🤖 DrawMe Agent: generate diagrams from natural language and insert them into the canvas
 
-
-## DrawMe Agent
-
-This project adds DrawMe Agent on top of the Drawnix whiteboard. Open the Agent from the ✨ button in the top-right toolbar, describe what you want, and the agent calls the `create_diagram` tool to generate a Mermaid flowchart or Markdown mind map and insert it into the current canvas.
-
-Highlights:
-
-- Multi-turn chat, tool calling, stop generation, and cascading insertion of multiple diagrams
-- OpenAI Chat Completions compatible endpoints with OpenAI, DeepSeek, and Ollama presets
-- Accepts either an API base URL or a full `/chat/completions` URL
-
-Run locally:
+## Getting started
 
 ```bash
 npm install
 npm run start
 ```
 
-Open the app, click the ✨ button in the toolbar, then enter the API URL, model name, and API key under model settings. The API key can be empty for local models.
+The dev server runs at <http://localhost:7200>
 
-> **Security note**: The current implementation calls the model provider directly from the browser and stores settings under the `drawnix.agent.provider` key in `localStorage`. This is intended for local development or personal use only. For production, proxy model requests through a backend so end users are never exposed to the API key. A proxy is also required when the provider blocks browser requests with CORS.
+## DrawMe Agent
 
+Click the ✨ button on the right side of the top toolbar to open the agent, then describe what you need. The agent calls the `create_diagram` tool to build a Mermaid flowchart or a Markdown mind map and inserts it into the current canvas.
 
-## About the Name
+Highlights:
 
-***Drawnix*** is born from the interweaving of ***Draw*** and ***Phoenix***, a fusion of artistic inspiration.
+- Multi-turn conversation, tool calls, stop generation, and cascading insertion of multiple diagrams
+- Works with OpenAI Chat Completions compatible endpoints; presets for OpenAI, DeepSeek, and Ollama
+- Accepts either an API base URL or a full `/chat/completions` URL
 
-The *Phoenix* symbolizes endless creativity, while *Draw* represents humanity's most fundamental form of expression. Here, each creation is an artistic rebirth, every stroke a renaissance of inspiration.
+Fill in the API address, model, and API key in "Model settings" to start. Leave the key empty to use a local model.
 
-Like a Phoenix, creativity must rise from the flames to be reborn, and ***Drawnix*** stands as the guardian of both technical and creative fire.
+> **Security note**: this implementation calls the model endpoint directly from the browser and stores the configuration in `localStorage` under `drawme.agent.provider`. It is intended for local development or personal use. In production, proxy model requests through your backend so end users never see the API key; a proxy is also required when the model provider does not allow browser CORS requests.
 
-*Draw Beyond, Rise Above.*
-
-## About Plait Drawing Framework
-
-*Drawnix* is positioned as an out-of-the-box, *open-source*, and free tool product. It is built on top of the *Plait* framework, which is our company's *open-source* drawing framework representing significant technical accumulation in knowledge base products([PingCode Wiki](https://pingcode.com/product/wiki?utm_source=drawnix)).
-
-
-*Drawnix* uses a *plugin architecture*, which is technically more complex than the previously mentioned *open-source* tools. However, this *plugin architecture* has its advantages: it supports multiple *UI frameworks* (*Angular*, *React*), integrates with different *rich text frameworks* (currently only supporting *Slate* framework), enables better business layer separation in development, allows development of various fine-grained reusable plugins, and can expand to more whiteboard application scenarios.
-
-## Repository Structure
+## Repository layout
 
 ```
-drawnix/
+.
 ├── apps/
-│   ├── web                   # drawnix.com
-│   │    └── index.html       # HTML
-├── dist/                     # Build artifacts
+│   └── web                   # Web app entry
 ├── packages/
-│   └── drawnix/              # Whiteboard application core
-│   └── react-board/          # Whiteboard react view layer
-│   └── react-text/           # Text rendering module
-├── package.json
-├── ...
-└── README.md
-└── README_en.md
-
+│   ├── drawnix               # Whiteboard application
+│   ├── react-board           # React view layer for the board
+│   └── react-text            # Text rendering module
+├── scripts/                  # Build and release scripts
+└── package.json
 ```
 
-## Try It Out
+## Commands
 
-*https://drawnix.com* is the minimal application of *drawnix*.
-
-I will be iterating frequently on *drawnix.com* until the release of the *Dawn* version.
-
-
-## Development
-
-```
-npm install
-
-npm run start
+```bash
+npm run start      # start the dev server
+npm run build      # build all projects
+npm run build:web  # build the web app only
+npm test           # run unit tests
+npm run lint       # lint
+npm run format     # format
 ```
 
 ## Docker
 
+```bash
+docker build -t drawme:latest .
+docker run --rm -p 8080:80 drawme:latest
 ```
-docker pull pubuzhixing/drawnix:latest
-```
 
-## Dependencies
+Open <http://localhost:8080> after the build finishes.
 
-- [plait](https://github.com/worktile/plait) - Open source drawing framework
-- [slate](https://github.com/ianstormtaylor/slate) - Rich text editor framework
-- [floating-ui](https://github.com/floating-ui/floating-ui) - An awesome library for creating floating UI elements
+## License and third-party notices
 
-
-## Contributing
-
-Any form of contribution is welcome:
-
-Before opening an issue or pull request, please read the [Contributing Guide](CONTRIBUTING.md).
-
-- Report bugs
-
-- Contribute code
-
-## Thank you for supporting
-
-Special thanks to the company for its strong support for open source projects, and also to the friends who contributed code and provided suggestions to this project.
-
-<p align="left">
-  <a href="https://pingcode.com?utm_source=drawnix" target="_blank">
-      <img src="https://cdn-aliyun.pingcode.com/static/site/img/pingcode-logo.4267e7b.svg" width="120" alt="PingCode" />
-  </a>
-</p>
-
-## License
-
-[MIT License](https://github.com/plait-board/drawnix/blob/master/LICENSE)
+This project is derived from the MIT-licensed Drawnix project and uses third-party components such as Plait, Slate, and Floating UI. Copyright and license notices are available in [LICENSE](LICENSE), [NOTICE](NOTICE), and in the license files shipped with each dependency.

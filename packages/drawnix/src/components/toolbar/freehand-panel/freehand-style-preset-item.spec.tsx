@@ -13,7 +13,7 @@ vi.mock('../../../i18n', () => ({
   }),
 }));
 
-vi.mock('@plait-board/react-board', () => ({
+vi.mock('@drawme/react-board', () => ({
   useBoard: () => ({
     theme: {
       themeColorMode: 'light',

@@ -1,4 +1,4 @@
-import { useBoard } from '@plait-board/react-board';
+import { useBoard } from '@drawme/react-board';
 import Stack from '../../stack';
 import { ToolButton } from '../../tool-button';
 import { DuplicateIcon, MenuIcon, RedoIcon, TrashIcon, UndoIcon } from '../../icons';
@@ -19,7 +19,6 @@ import {
   SaveAsFile,
   SaveAsImage,
   SaveToFile,
-  Socials,
 } from './app-menu-items';
 import { LanguageSwitcherMenu } from './language-switcher-menu';
 import Menu from '../../menu/menu';
@@ -72,7 +71,6 @@ export const AppToolbar = () => {
               <CleanBoard></CleanBoard>
               <MenuSeparator />
               <LanguageSwitcherMenu />
-              <Socials />
             </Menu>
           </PopoverContent>
         </Popover>
