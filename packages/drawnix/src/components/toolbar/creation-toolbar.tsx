@@ -429,7 +429,6 @@ export const CreationToolbar = () => {
           key="agent"
           type="icon"
           visible={true}
-          className="draw-toolbar__agent"
           icon={SparklesIcon}
           selected={appState.agentPanelOpen}
           title={appState.agentPanelOpen ? t('agent.close') : t('agent.open')}
