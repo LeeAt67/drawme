@@ -1,113 +1,109 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import {
-  AGENT_PROVIDER_STORAGE_KEY,
-  DEFAULT_AGENT_PROVIDER_CONFIG,
-  getChatCompletionsUrl,
-  isAgentProviderConfigReady,
-  loadAgentProviderConfig,
-  normalizeAgentProviderConfig,
-  saveAgentProviderConfig,
+  AGENT_CONFIG_ENDPOINT,
+  AgentApiError,
+  fetchAgentServerConfig,
+  getApiErrorMessage,
+  isAuthenticationError,
+  normalizeAgentServerConfig,
 } from './config';
 
-const createStorage = (initialValue: string | null = null) => {
-  let value = initialValue;
+const createJsonResponse = (body: unknown, status = 200) =>
+  ({
+    ok: status >= 200 && status < 300,
+    status,
+    text: async () => JSON.stringify(body),
+  }) as unknown as Response;
 
-  return {
-    getItem: (key: string) => (key === AGENT_PROVIDER_STORAGE_KEY ? value : null),
-    setItem: (key: string, nextValue: string) => {
-      if (key === AGENT_PROVIDER_STORAGE_KEY) {
-        value = nextValue;
-      }
-    },
-    getValue: () => value,
-  };
-};
-
-describe('agent provider config', () => {
-  it('normalizes a base URL into a chat completions endpoint', () => {
-    expect(getChatCompletionsUrl(' https://api.example.com/v1/// ')).toBe(
-      'https://api.example.com/v1/chat/completions'
-    );
-  });
-
-  it('keeps a full chat completions URL unchanged', () => {
-    expect(getChatCompletionsUrl('https://api.example.com/v1/chat/completions/')).toBe(
-      'https://api.example.com/v1/chat/completions'
-    );
-  });
-
-  it('returns an empty endpoint when the base URL is empty', () => {
-    expect(getChatCompletionsUrl('   ')).toBe('');
-  });
-
-  it('trims values and applies defaults when normalizing config', () => {
-    expect(
-      normalizeAgentProviderConfig({
-        baseUrl: ' https://api.example.com/v1/ ',
-        apiKey: ' sk-test ',
-        model: ' model-name ',
-      })
-    ).toEqual({
-      baseUrl: 'https://api.example.com/v1',
-      apiKey: 'sk-test',
-      model: 'model-name',
-    });
-
-    expect(normalizeAgentProviderConfig(null)).toEqual(DEFAULT_AGENT_PROVIDER_CONFIG);
-  });
-
-  it('checks whether the provider config is usable', () => {
-    expect(
-      isAgentProviderConfigReady({
-        baseUrl: 'https://api.example.com/v1',
-        apiKey: '',
-        model: 'model-name',
-      })
-    ).toBe(true);
-    expect(
-      isAgentProviderConfigReady({
-        baseUrl: ' ',
-        apiKey: 'key',
-        model: 'model-name',
-      })
-    ).toBe(false);
-  });
-
-  it('loads and saves config through the provided storage', () => {
-    const storage = createStorage(
-      JSON.stringify({
-        baseUrl: ' https://api.example.com/v1/ ',
-        apiKey: ' sk-test ',
-        model: ' model-name ',
-      })
-    );
-
-    expect(loadAgentProviderConfig(storage)).toEqual({
-      baseUrl: 'https://api.example.com/v1',
-      apiKey: 'sk-test',
-      model: 'model-name',
-    });
-
-    saveAgentProviderConfig(
-      {
-        baseUrl: ' https://second.example.com/v1/ ',
-        apiKey: ' second-key ',
-        model: ' second-model ',
-      },
-      storage
-    );
-
-    expect(JSON.parse(storage.getValue() || '{}')).toEqual({
-      baseUrl: 'https://second.example.com/v1',
-      apiKey: 'second-key',
-      model: 'second-model',
+describe('agent server config', () => {
+  it('normalizes the configured flag and trims the model name', () => {
+    expect(normalizeAgentServerConfig({ configured: true, model: ' gpt-4o-mini ' })).toEqual({
+      configured: true,
+      model: 'gpt-4o-mini',
     });
   });
 
-  it('falls back to defaults for missing or invalid stored data', () => {
-    expect(loadAgentProviderConfig(createStorage())).toEqual(DEFAULT_AGENT_PROVIDER_CONFIG);
-    expect(loadAgentProviderConfig(createStorage('{invalid-json'))).toEqual(
-      DEFAULT_AGENT_PROVIDER_CONFIG
+  it('treats non-true configured values as not configured', () => {
+    expect(normalizeAgentServerConfig({ configured: 'yes', model: 42 })).toEqual({
+      configured: false,
+      model: '',
+    });
+    expect(normalizeAgentServerConfig(null)).toEqual({ configured: false, model: '' });
+  });
+
+  it('extracts API error messages with a raw body and status fallback', () => {
+    expect(getApiErrorMessage({ error: { message: ' upstream failed ' } }, 500)).toBe(
+      'upstream failed'
     );
+    expect(getApiErrorMessage(null, 502, 'bad gateway')).toBe('bad gateway');
+    expect(getApiErrorMessage(null, 503, '')).toBe('Request failed with status 503.');
+  });
+
+  it('fetches the server config from the same-origin endpoint', async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue(createJsonResponse({ configured: true, model: 'gpt-4o-mini' }));
+
+    const config = await fetchAgentServerConfig(fetchMock as unknown as typeof fetch);
+
+    expect(config).toEqual({ configured: true, model: 'gpt-4o-mini' });
+    expect(fetchMock).toHaveBeenCalledWith(AGENT_CONFIG_ENDPOINT, {
+      headers: { Accept: 'application/json' },
+    });
+  });
+
+  it('surfaces the server error message when the request fails', async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue(
+        createJsonResponse(
+          { error: { code: 'agent_not_configured', message: 'Agent is not configured.' } },
+          503
+        )
+      );
+
+    await expect(fetchAgentServerConfig(fetchMock as unknown as typeof fetch)).rejects.toThrow(
+      'Agent is not configured.'
+    );
+  });
+
+  it('keeps the HTTP status and error code on API errors', async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue(
+        createJsonResponse(
+          { error: { code: 'authentication_required', message: 'Sign in to continue.' } },
+          401
+        )
+      );
+
+    const error = await fetchAgentServerConfig(fetchMock as unknown as typeof fetch).catch(
+      (caught: unknown) => caught
+    );
+
+    expect(error).toBeInstanceOf(AgentApiError);
+    expect(error).toMatchObject({
+      status: 401,
+      code: 'authentication_required',
+      message: 'Sign in to continue.',
+      name: 'AgentApiError',
+    });
+    expect(isAuthenticationError(error)).toBe(true);
+    expect(isAuthenticationError(new Error('network down'))).toBe(false);
+  });
+
+  it('falls back to a generic error code for malformed error bodies', async () => {
+    const fetchMock = vi.fn().mockResolvedValue(createJsonResponse({ error: { code: 42 } }, 500));
+
+    await expect(
+      fetchAgentServerConfig(fetchMock as unknown as typeof fetch)
+    ).rejects.toMatchObject({
+      status: 500,
+      code: 'request_failed',
+    });
+  });
+
+  it('uses same-origin agent endpoints', () => {
+    expect(AGENT_CONFIG_ENDPOINT).toBe('/api/agent/config');
   });
 });

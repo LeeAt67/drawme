@@ -8,7 +8,6 @@ import {
   isMovingElements,
   isSelectionMoving,
   PlaitBoard,
-  PlaitElement,
   RectangleClient,
   toHostPointFromViewBoxPoint,
   toScreenPointFromHostPoint,
@@ -19,29 +18,25 @@ import { flip, offset, useFloating } from '@floating-ui/react';
 import { Island } from '../../island';
 import classNames from 'classnames';
 import { useI18n } from '../../../i18n';
-import { getStrokeColorByElement as getStrokeColorByMindElement, MindElement } from '@plait/mind';
 import './popup-toolbar.scss';
-import {
-  ArrowLineHandle,
-  getStrokeColorByElement as getStrokeColorByDrawElement,
-  getStrokeStyleByElement,
-  isClosedCustomGeometry,
-  isClosedDrawElement,
-  isDrawElementsIncludeText,
-  PlaitDrawElement,
-} from '@plait/draw';
+import { ArrowLineHandle, PlaitDrawElement } from '@plait/draw';
 import { CustomText, StrokeStyle } from '@plait/common';
-import { getTextMarksByElement } from '@plait/text-plugins';
 import { PopupFontColorButton } from './font-color-button';
 import { PopupFontSizeControl } from './font-size-control';
 import { PopupStrokeButton } from './stroke-button';
 import { PopupFillButton } from './fill-button';
 import { isWhite, removeHexAlpha } from '../../../utils/color';
-import { NO_COLOR } from '../../../constants/color';
-import { Freehand } from '../../../plugins/freehand/type';
 import { PopupLinkButton } from './link-button';
 import { ArrowMarkButton } from './arrow-mark-button';
 import { MoreOptionsButton } from './more-options-button';
+import {
+  getElementState,
+  getFontSizeFromMarks,
+  hasFillProperty,
+  hasStrokeProperty,
+  hasStrokeStyleProperty,
+  hasTextProperty,
+} from './element-style';
 
 export const PopupToolbar = () => {
   const board = useBoard();
@@ -237,98 +232,11 @@ export const PopupToolbar = () => {
   );
 };
 
-export const getMindElementState = (board: PlaitBoard, element: MindElement) => {
-  const marks = getTextMarksByElement(element);
-  return {
-    fill: element.fill,
-    strokeColor: getStrokeColorByMindElement(board, element),
-    strokeStyle: getStrokeStyleByElement(board, element),
-    marks,
-  };
-};
-
-export const getDrawElementState = (board: PlaitBoard, element: PlaitDrawElement) => {
-  const marks: Omit<CustomText, 'text'> = getTextMarksByElement(element);
-  return {
-    fill: element.fill,
-    strokeColor: getStrokeColorByDrawElement(board, element),
-    strokeStyle: getStrokeStyleByElement(board, element),
-    marks,
-    source: element?.source || {},
-    target: element?.target || {},
-  };
-};
-
-export const getElementState = (board: PlaitBoard) => {
-  const selectedElement = getSelectedElements(board)[0];
-  if (MindElement.isMindElement(board, selectedElement)) {
-    return getMindElementState(board, selectedElement);
-  }
-  return getDrawElementState(board, selectedElement as PlaitDrawElement);
-};
-
-export const hasFillProperty = (board: PlaitBoard, element: PlaitElement) => {
-  if (MindElement.isMindElement(board, element)) {
-    return true;
-  }
-  if (isClosedCustomGeometry(board, element)) {
-    return true;
-  }
-  if (PlaitDrawElement.isDrawElement(element)) {
-    return (
-      PlaitDrawElement.isShapeElement(element) &&
-      !PlaitDrawElement.isImage(element) &&
-      !PlaitDrawElement.isText(element) &&
-      isClosedDrawElement(element)
-    );
-  }
-  return false;
-};
-
-export const hasStrokeProperty = (board: PlaitBoard, element: PlaitElement) => {
-  if (MindElement.isMindElement(board, element)) {
-    return true;
-  }
-  if (Freehand.isFreehand(element)) {
-    return true;
-  }
-  if (PlaitDrawElement.isDrawElement(element)) {
-    return (
-      (PlaitDrawElement.isShapeElement(element) &&
-        !PlaitDrawElement.isImage(element) &&
-        !PlaitDrawElement.isText(element)) ||
-      PlaitDrawElement.isArrowLine(element) ||
-      PlaitDrawElement.isVectorLine(element) ||
-      PlaitDrawElement.isTable(element)
-    );
-  }
-  return false;
-};
-
-export const hasStrokeStyleProperty = (board: PlaitBoard, element: PlaitElement) => {
-  return hasStrokeProperty(board, element);
-};
-
-export const hasTextProperty = (board: PlaitBoard, element: PlaitElement) => {
-  if (MindElement.isMindElement(board, element)) {
-    return true;
-  }
-  if (PlaitDrawElement.isDrawElement(element)) {
-    return isDrawElementsIncludeText([element]);
-  }
-  return false;
-};
-
-export const getColorPropertyValue = (color: string) => {
-  if (color === NO_COLOR) {
-    return null;
-  } else {
-    return color;
-  }
-};
-
-const getFontSizeFromMarks = (marks?: Omit<CustomText, 'text'>) => {
-  const value = (marks as any)?.['font-size'];
-  const size = typeof value === 'number' ? value : Number(value);
-  return Number.isFinite(size) && size > 0 ? size : undefined;
-};
+export {
+  getElementState,
+  getFontSizeFromMarks,
+  hasFillProperty,
+  hasStrokeProperty,
+  hasStrokeStyleProperty,
+  hasTextProperty,
+} from './element-style';

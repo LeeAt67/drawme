@@ -13,6 +13,7 @@ import {
   ImageIcon,
   ExtraToolsIcon,
   SparklesIcon,
+  ChevronDownIcon,
 } from '../icons';
 import { useBoard } from '@drawme/react-board';
 import {
@@ -40,6 +41,7 @@ import { ExtraToolsButton } from './extra-tools/extra-tools-button';
 import { addImage } from '../../utils/image';
 import { Translations, useI18n } from '../../i18n';
 import { FREEHANDS } from '../../constants/freehand';
+import { useLayout } from '../shell/use-layout';
 
 export enum PopupKey {
   'shape' = 'shape',
@@ -138,12 +140,18 @@ const isFreehandPointer = (pointer?: string) => {
   return pointer === FreehandShape.feltTipPen || pointer === FreehandShape.eraser;
 };
 
-export const CreationToolbar = () => {
+type CreationToolbarProps = {
+  variant?: 'floating' | 'docked';
+};
+
+export const CreationToolbar = ({ variant = 'floating' }: CreationToolbarProps) => {
   const board = useBoard();
   const { appState, setAppState } = useDrawnix();
+  const { toggleAgent, isAgentOpen, layout, collapseToolbar, expandToolbar } = useLayout();
   const toolState = appState.toolState;
   const { t } = useI18n();
-  const container = PlaitBoard.getBoardContainer(board) ?? null;
+  const boardContainer = PlaitBoard.getBoardContainer(board) ?? null;
+  const container = (boardContainer?.closest('.dx-canvas') as HTMLElement | null) ?? boardContainer;
 
   const [freehandOpen, setFreehandOpen] = useState(false);
   const [arrowOpen, setArrowOpen] = useState(false);
@@ -208,6 +216,36 @@ export const CreationToolbar = () => {
     return isFreehandPointer(board.pointer);
   };
 
+  const activeToolIcon = isArrowLinePointerType(toolState.pointer)
+    ? StraightArrowLineIcon
+    : isShapeMenuPointer(toolState.pointer)
+      ? ShapeIcon
+      : ((isFreehandPointer(toolState.pointer)
+          ? FREEHANDS.find((freehand) => freehand.pointer === toolState.pointer)?.icon
+          : undefined) ??
+        BUTTONS.find((button) => button.pointer === toolState.pointer)?.icon ??
+        SelectionIcon);
+
+  if (isAgentOpen) {
+    return null;
+  }
+
+  if (variant === 'docked') {
+    if (layout.toolbarCollapsed) {
+      return (
+        <button
+          type="button"
+          className="dx-toolbar-ball"
+          title={t('toolbar.expand')}
+          aria-label={t('toolbar.expand')}
+          onClick={expandToolbar}
+        >
+          {activeToolIcon}
+        </button>
+      );
+    }
+  }
+
   const updateFreehandSettings = (
     presetIndex: number,
     nextSettings: Partial<(typeof toolState)['freehandPresets'][number]>
@@ -230,7 +268,13 @@ export const CreationToolbar = () => {
   };
 
   return (
-    <Island padding={1} className={classNames('draw-toolbar', ATTACHED_ELEMENT_CLASS_NAME)}>
+    <Island
+      padding={1}
+      className={classNames(
+        variant === 'docked' ? 'bottom-toolbar' : 'draw-toolbar',
+        ATTACHED_ELEMENT_CLASS_NAME
+      )}
+    >
       <Stack.Row gap={1}>
         {BUTTONS.map((button, index) => {
           if (appState.isMobile && button.pointer === PlaitPointerType.hand) {
@@ -430,16 +474,22 @@ export const CreationToolbar = () => {
           type="icon"
           visible={true}
           icon={SparklesIcon}
-          selected={appState.agentPanelOpen}
-          title={appState.agentPanelOpen ? t('agent.close') : t('agent.open')}
-          aria-label={appState.agentPanelOpen ? t('agent.close') : t('agent.open')}
-          onClick={() => {
-            setAppState((currentAppState) => ({
-              ...currentAppState,
-              agentPanelOpen: !currentAppState.agentPanelOpen,
-            }));
-          }}
+          selected={isAgentOpen}
+          title={isAgentOpen ? t('agent.close') : t('agent.open')}
+          aria-label={isAgentOpen ? t('agent.close') : t('agent.open')}
+          onClick={toggleAgent}
         />
+        {variant === 'docked' && (
+          <ToolButton
+            key="collapse"
+            type="icon"
+            visible={true}
+            icon={ChevronDownIcon}
+            title={t('toolbar.collapse')}
+            aria-label={t('toolbar.collapse')}
+            onClick={collapseToolbar}
+          />
+        )}
       </Stack.Row>
     </Island>
   );

@@ -18,7 +18,7 @@ import { MindThemeColors, withMind } from '@plait/mind';
 import MobileDetect from 'mobile-detect';
 import { withMindExtend } from './plugins/with-mind-extend';
 import { withCommonPlugin } from './plugins/with-common';
-import { CreationToolbar } from './components/toolbar/creation-toolbar';
+import { BottomToolbar } from './components/shell/bottom-toolbar';
 import { ZoomToolbar } from './components/toolbar/zoom-toolbar';
 import { PopupToolbar } from './components/toolbar/popup-toolbar/popup-toolbar';
 import { AppToolbar } from './components/toolbar/app-toolbar/app-toolbar';
@@ -33,12 +33,16 @@ import {
   DrawnixBoard,
   DrawnixContext,
   DrawnixToolState,
+  mergeLayoutState,
   mergeToolState,
+  type DrawnixLayoutState,
+  type DrawnixSaveState,
   type DrawnixState,
 } from './hooks/use-drawnix';
 import { ClosePencilToolbar } from './components/toolbar/pencil-mode-toolbar';
 import { TTDDialog } from './components/ttd-dialog/ttd-dialog';
 import { CleanConfirm } from './components/clean-confirm/clean-confirm';
+import { AuthDialog } from './auth/auth-dialog';
 import { buildTextLinkPlugin } from './plugins/with-text-link';
 import { LinkPopup } from './components/popup/link-popup/link-popup';
 import { I18nProvider, setBoardLanguage } from './i18n';
@@ -47,6 +51,8 @@ import { Tutorial } from './components/tutorial';
 import { LASER_POINTER_CLASS_NAME } from './utils/laser-pointer';
 import { Toast, useToast } from './components/toast/toast';
 import { AgentPanel } from './agent/agent-panel';
+import { useUiShortcuts } from './hooks/use-ui-shortcuts';
+import './components/shell/app-shell.scss';
 
 export type DrawnixProps = {
   value: PlaitElement[];
@@ -58,6 +64,8 @@ export type DrawnixProps = {
     exportTransparent?: boolean;
   };
   initialLanguage?: Language;
+  initialLayout?: Partial<DrawnixLayoutState>;
+  saveState?: DrawnixSaveState;
   onChange?: (value: BoardChangeData) => void;
   onSelectionChange?: (selection: Selection | null) => void;
   onValueChange?: (value: PlaitElement[]) => void;
@@ -69,11 +77,13 @@ export type DrawnixProps = {
     exportTransparent: boolean;
   }) => void;
   onLanguageChange?: (language: Language) => void;
+  onLayoutChange?: (layout: DrawnixLayoutState) => void;
   afterInit?: (board: PlaitBoard) => void;
   tutorial?: boolean;
+  boardTitle?: string;
 } & React.HTMLAttributes<HTMLDivElement>;
 
-export type { DrawnixToolState } from './hooks/use-drawnix';
+export type { DrawnixLayoutState, DrawnixSaveState, DrawnixToolState } from './hooks/use-drawnix';
 
 const applyToolStateToBoard = (board: PlaitBoard, toolState: DrawnixToolState) => {
   BoardTransforms.updatePointerType(board, toolState.pointer);
@@ -92,6 +102,7 @@ export const Drawnix: React.FC<DrawnixProps> = ({
   initialToolState,
   initialPreference,
   initialLanguage,
+  initialLayout,
   onChange,
   onSelectionChange,
   onViewportChange,
@@ -100,6 +111,7 @@ export const Drawnix: React.FC<DrawnixProps> = ({
   onToolStateChange,
   onPreferenceChange,
   onLanguageChange,
+  onLayoutChange,
   afterInit,
   tutorial = false,
 }) => {
@@ -112,14 +124,19 @@ export const Drawnix: React.FC<DrawnixProps> = ({
 
   const [appState, setAppState] = useState<DrawnixState>(() => {
     const md = new MobileDetect(window.navigator.userAgent);
+    const isMobile = md.mobile() !== null;
+    const layout = mergeLayoutState(isMobile, initialLayout);
+    const collapsePanels = isMobile || window.innerWidth <= 1024;
     return {
       toolState: mergeToolState(initialToolState),
-      isMobile: md.mobile() !== null,
+      isMobile,
       isPencilMode: false,
       fileHandle: null,
       openDialogType: null,
       openCleanConfirm: false,
-      agentPanelOpen: false,
+      layout: collapsePanels
+        ? { ...layout, leftPanelOpen: false, contextPanelOpen: false }
+        : layout,
       copyTransparent: initialPreference?.copyTransparent ?? false,
       exportTransparent: initialPreference?.exportTransparent ?? false,
     };
@@ -171,6 +188,21 @@ export const Drawnix: React.FC<DrawnixProps> = ({
     });
   }, [appState.copyTransparent, appState.exportTransparent]);
 
+  const hasMountedLayoutRef = useRef(false);
+  const onLayoutChangeRef = useRef(onLayoutChange);
+  onLayoutChangeRef.current = onLayoutChange;
+
+  useEffect(() => {
+    if (!hasMountedLayoutRef.current) {
+      hasMountedLayoutRef.current = true;
+      return;
+    }
+    const timer = window.setTimeout(() => {
+      onLayoutChangeRef.current?.(appState.layout);
+    }, 250);
+    return () => window.clearTimeout(timer);
+  }, [appState.layout]);
+
   useEffect(() => {
     if (theme?.themeColorMode) {
       setThemeColorMode(theme.themeColorMode);
@@ -213,6 +245,8 @@ export const Drawnix: React.FC<DrawnixProps> = ({
   ];
 
   const containerRef = useRef<HTMLDivElement>(null);
+
+  useUiShortcuts({ board, setAppState });
 
   return (
     <I18nProvider
@@ -260,16 +294,17 @@ export const Drawnix: React.FC<DrawnixProps> = ({
             >
               {tutorial && board && <Tutorial />}
             </Board>
-            <AppToolbar></AppToolbar>
-            <CreationToolbar></CreationToolbar>
-            <ZoomToolbar></ZoomToolbar>
-            <ThemeToolbar></ThemeToolbar>
             <PopupToolbar></PopupToolbar>
             <LinkPopup></LinkPopup>
             <ClosePencilToolbar></ClosePencilToolbar>
-            <AgentPanel></AgentPanel>
+            <AppToolbar></AppToolbar>
+            <BottomToolbar></BottomToolbar>
+            <AgentPanel />
+            <ZoomToolbar></ZoomToolbar>
+            <ThemeToolbar></ThemeToolbar>
             <TTDDialog container={containerRef.current}></TTDDialog>
             <CleanConfirm container={containerRef.current}></CleanConfirm>
+            <AuthDialog container={containerRef.current}></AuthDialog>
             <Toast toast={toast} container={containerRef.current}></Toast>
           </Wrapper>
           <canvas className={`${LASER_POINTER_CLASS_NAME} mouse-course-hidden`}></canvas>

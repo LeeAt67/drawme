@@ -24,7 +24,7 @@
 - **工具的两条通路**：`BUTTONS`（`creation-toolbar.tsx` 内的数组）定义工具顺序与图标；真正切换走 `BoardTransforms.updatePointerType` + `updateToolState({ pointer })`。只改 `BUTTONS` 而不改快捷键/`isChecked` 会导致状态不同步。
 - **`isChecked` 的排斥逻辑**：任一弹层（`arrowOpen`/`shapeOpen`/`freehandOpen`）打开时，所有单选按钮都不显示选中态，避免"两个按钮同时高亮"。
 - **`lastXxxPointer`**：形状/箭头/画笔各记住上次选择，重新点开弹层时恢复。写入点在各 `onPointerUp` 中，读取点在 `popup-toolbar` 与 `creation-toolbar`。
-- **Agent 入口**：创建栏末尾的分隔线（`.draw-toolbar__divider`）+ `SparklesIcon` 按钮，直接读写 `appState.agentPanelOpen`。它与 Agent 面板头部关闭按钮共享同一状态，不要再单独维护局部开关。
+- **Agent 入口**：创建栏末尾的分隔线（`.draw-toolbar__divider`）+ `SparklesIcon` 按钮，调用 `useLayout().toggleAgent`。打开 Agent 时底部工具栏整条隐藏、只留底部的 Agent 输入框；`variant="docked"` 的工具栏还提供 ChevronDown 收起按钮，收起后变成居中的 `.dx-toolbar-ball`。两种形态互斥由 `layoutForAgentOpenChange` / `layoutForToolbarCollapseChange` 保证，不要单独维护局部开关。
 
 ## 测试用例覆盖
 

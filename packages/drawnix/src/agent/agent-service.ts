@@ -1,8 +1,7 @@
-import { getChatCompletionsUrl } from './config';
-import { CREATE_DIAGRAM_TOOL_DEFINITION, CREATE_DIAGRAM_TOOL_NAME } from './tool-definition';
+import { AGENT_CHAT_ENDPOINT, createAgentApiError } from './config';
+import { isAgentTool } from './tools/registry';
 import type {
   AgentConversationMessage,
-  AgentProviderConfig,
   AgentToolCall,
   AgentToolEvent,
   AgentToolExecution,
@@ -25,20 +24,17 @@ type ApiMessage = {
   tool_call_id?: string;
 };
 
-type ChatCompletionResponse = {
-  choices?: Array<{
-    message?: {
-      content?: string | null;
-      tool_calls?: ApiToolCall[];
-    };
-  }>;
+type AgentChatResponse = {
+  message?: {
+    content?: string | null;
+    tool_calls?: ApiToolCall[];
+  };
   error?: {
     message?: string;
   };
 };
 
 export type RunAgentTurnOptions = {
-  config: AgentProviderConfig;
   systemPrompt: string;
   history: AgentConversationMessage[];
   executeTool: (toolCall: AgentToolCall) => Promise<AgentToolExecution>;
@@ -46,59 +42,43 @@ export type RunAgentTurnOptions = {
   onProgress?: (message: string) => void;
   fetchImpl?: typeof fetch;
   maxSteps?: number;
+  /** 单轮最多执行多少个工具调用，防止一次铺满整块画布。 */
+  maxToolCalls?: number;
+  /** 收敛用：修复轮把模型强制指回某个工具。 */
+  toolChoice?: 'auto' | { type: 'function'; function: { name: string } };
 };
 
 const MAX_AGENT_STEPS = 5;
-
-function getApiErrorMessage(responseBody: string, status: number): string {
-  try {
-    const parsedBody = JSON.parse(responseBody) as ChatCompletionResponse;
-    return parsedBody.error?.message || `Request failed with status ${status}.`;
-  } catch {
-    return responseBody.trim() || `Request failed with status ${status}.`;
-  }
-}
+const MAX_TOOL_CALLS_PER_TURN = 8;
 
 async function requestChatCompletion(
-  config: AgentProviderConfig,
   messages: ApiMessage[],
   signal: AbortSignal | undefined,
-  fetchImpl: typeof fetch
+  fetchImpl: typeof fetch,
+  toolChoice: RunAgentTurnOptions['toolChoice']
 ): Promise<ApiMessage> {
-  const endpoint = getChatCompletionsUrl(config.baseUrl);
-  if (!endpoint) {
-    throw new Error('Agent API address is not configured.');
-  }
-
-  const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
-  };
-  if (config.apiKey) {
-    headers.Authorization = `Bearer ${config.apiKey}`;
-  }
-
-  const response = await fetchImpl(endpoint, {
+  const response = await fetchImpl(AGENT_CHAT_ENDPOINT, {
     method: 'POST',
-    headers,
+    headers: { 'Content-Type': 'application/json' },
     signal,
-    body: JSON.stringify({
-      model: config.model,
-      messages,
-      tools: [CREATE_DIAGRAM_TOOL_DEFINITION],
-      tool_choice: 'auto',
-      stream: false,
-    }),
+    body: JSON.stringify({ messages, tool_choice: toolChoice }),
   });
 
-  if (!response.ok) {
-    const responseBody = await response.text();
-    throw new Error(getApiErrorMessage(responseBody, response.status));
+  const rawBody = await response.text();
+  let data: AgentChatResponse | null = null;
+  try {
+    data = rawBody ? (JSON.parse(rawBody) as AgentChatResponse) : null;
+  } catch {
+    data = null;
   }
 
-  const data = (await response.json()) as ChatCompletionResponse;
-  const assistantMessage = data.choices?.[0]?.message;
+  if (!response.ok) {
+    throw createAgentApiError(data, response.status, rawBody);
+  }
+
+  const assistantMessage = data?.message;
   if (!assistantMessage) {
-    throw new Error(data.error?.message || 'The model returned an empty response.');
+    throw new Error(data?.error?.message || 'The model returned an empty response.');
   }
 
   return {
@@ -119,7 +99,6 @@ function normalizeToolCalls(toolCalls: ApiToolCall[] | undefined): AgentToolCall
 }
 
 export async function runAgentTurn({
-  config,
   systemPrompt,
   history,
   executeTool,
@@ -127,6 +106,8 @@ export async function runAgentTurn({
   onProgress,
   fetchImpl = fetch,
   maxSteps = MAX_AGENT_STEPS,
+  maxToolCalls = MAX_TOOL_CALLS_PER_TURN,
+  toolChoice = 'auto',
 }: RunAgentTurnOptions): Promise<AgentTurnResult> {
   const messages: ApiMessage[] = [
     { role: 'system', content: systemPrompt },
@@ -137,9 +118,11 @@ export async function runAgentTurn({
   ];
   const toolEvents: AgentToolEvent[] = [];
   let lastAssistantContent = '';
+  let executedToolCalls = 0;
+  let budgetExhausted = false;
 
   for (let step = 0; step < maxSteps; step += 1) {
-    const assistantMessage = await requestChatCompletion(config, messages, signal, fetchImpl);
+    const assistantMessage = await requestChatCompletion(messages, signal, fetchImpl, toolChoice);
     const assistantContent = assistantMessage.content?.trim();
     if (assistantContent) {
       lastAssistantContent = assistantContent;
@@ -157,13 +140,31 @@ export async function runAgentTurn({
     messages.push(assistantMessage);
     for (const toolCall of toolCalls) {
       let execution: AgentToolExecution;
-      if (toolCall.name !== CREATE_DIAGRAM_TOOL_NAME) {
+      if (executedToolCalls >= maxToolCalls) {
+        budgetExhausted = true;
+        execution = {
+          ok: false,
+          summary: 'Tool budget exhausted for this turn.',
+          output: {
+            ok: false,
+            error: {
+              code: 'tool_budget_exceeded',
+              message: `At most ${maxToolCalls} tool calls are allowed per turn.`,
+              hint: 'Insert what is already generated, then ask the user before creating more.',
+            },
+          },
+        };
+      } else if (!isAgentTool(toolCall.name)) {
         execution = {
           ok: false,
           summary: `Unknown tool: ${toolCall.name}`,
-          output: { error: `Unknown tool: ${toolCall.name}` },
+          output: {
+            ok: false,
+            error: { code: 'unknown_tool', message: `Unknown tool: ${toolCall.name}` },
+          },
         };
       } else {
+        executedToolCalls += 1;
         execution = await executeTool(toolCall);
       }
 
@@ -178,6 +179,10 @@ export async function runAgentTurn({
         tool_call_id: toolCall.id,
         content: JSON.stringify(execution.output),
       });
+    }
+
+    if (budgetExhausted) {
+      break;
     }
   }
 

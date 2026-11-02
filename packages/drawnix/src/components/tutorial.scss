@@ -1,10 +1,10 @@
 .drawnix-tutorial {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'PingFang SC', 'Noto Sans', 'Noto Sans CJK SC', 'Microsoft Yahei', 'Hiragino Sans GB', Arial, sans-serif;
   position: fixed;
-  top: 0;
-  left: 0;
+  inset: 0;
   width: 100%;
   height: 100%;
+  overflow: hidden;
   pointer-events: none;
   background-color: transparent;
   p {
@@ -63,47 +63,74 @@
 
   .feature-pointer {
     position: absolute;
+    display: flex;
+    gap: 4px;
   }
 
-  .top-left {
-    position: absolute;
-    top: 100px;
-    left: 60px;
-    .pointer-content {
+  .hint-menu {
+    top: calc(var(--dx-topbar-h, 48px) + 14px);
+    left: calc(var(--dx-nav-rail-w, 48px) + 28px);
+    align-items: flex-start;
+    gap: 8px;
+
+    .pointer-arrow-svg {
       position: absolute;
-      top: 100px;
-      width: 100%;
-      text-align: center;
-      left: 20px;
+      top: -17px;
+      left: -64px;
+    }
+
+    .pointer-content {
+      max-width: 220px;
     }
   }
 
-  .top-center {
-    top: 100px;
-    left: 50%;
-    width: 200px;
+  .hint-toolbar {
+    bottom: 88px;
+    left: calc(
+      (
+          100% + var(--dx-nav-rail-w, 48px) + var(--dx-canvas-left, 0px) -
+            var(--dx-canvas-right, 0px)
+        ) / 2
+    );
+    flex-direction: column;
+    align-items: center;
     transform: translateX(-50%);
+
     .pointer-content {
-      position: absolute;
-      width: 100%;
-      top: 50px;
-      left: 60px;
+      text-align: center;
     }
   }
 
-  .bottom-right {
-    bottom: 70px;
-    right: 40px;
+  .hint-theme {
+    bottom: 82px;
+    left: calc(var(--dx-nav-rail-w, 48px) + var(--dx-canvas-left, 0px) + 24px);
+    flex-direction: column;
+    align-items: flex-start;
+
     .pointer-content {
-      position: absolute;
-      top: -30px;
-      right: 80px;
-      width: 100%;
+      max-width: 220px;
     }
   }
 }
 
-@media screen and (max-width: 768px){
+.dx-shell--left-open .drawnix-tutorial .hint-menu {
+  display: none;
+}
+
+.drawnix.theme--dark {
+  .drawnix-tutorial {
+    .brand-title,
+    .brand-description {
+      color: var(--text-primary-color);
+    }
+
+    p {
+      color: var(--color-gray-50);
+    }
+  }
+}
+
+@media screen and (max-width: 1024px){
   .drawnix-tutorial {
     .tutorial-content {
       width: 95%;

@@ -1,9 +1,14 @@
 export type AgentDiagramFormat = 'mermaid' | 'markdown';
 
-export type AgentProviderConfig = {
-  baseUrl: string;
-  apiKey: string;
+export type AgentServerConfig = {
+  configured: boolean;
   model: string;
+};
+
+export type AgentUser = {
+  id: string;
+  email: string;
+  displayName: string;
 };
 
 export type AgentConversationMessage = {

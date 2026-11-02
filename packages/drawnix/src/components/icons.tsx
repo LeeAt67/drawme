@@ -557,6 +557,18 @@ export const ChevronRightIcon = createIcon(
   </svg>
 );
 
+export const ChevronLeftIcon = createIcon(
+  <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path
+      d="M10 3.5L5.5 8L10 12.5"
+      stroke="currentColor"
+      strokeWidth="1.4"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
 export const ThickCheckIcon = createIcon(
   <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path
@@ -629,6 +641,21 @@ export const SettingsIcon = createIcon(
   </svg>
 );
 
+export const AnnotateIcon = createIcon(
+  <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path
+      d="M2.4 5.4V3.6C2.4 2.94 2.94 2.4 3.6 2.4H5.4M10.6 2.4H12.4C13.06 2.4 13.6 2.94 13.6 3.6V5.4M13.6 10.6V12.4C13.6 13.06 13.06 13.6 12.4 13.6H10.6M5.4 13.6H3.6C2.94 13.6 2.4 13.06 2.4 12.4V10.6"
+      stroke="currentColor"
+      strokeWidth="1.3"
+      strokeLinecap="round"
+    />
+    <path
+      d="M8 5.6L8.55 7.15L10.1 7.7L8.55 8.25L8 9.8L7.45 8.25L5.9 7.7L7.45 7.15L8 5.6Z"
+      fill="currentColor"
+    />
+  </svg>
+);
+
 export const SendIcon = createIcon(
   <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path
@@ -650,5 +677,157 @@ export const StopIcon = createIcon(
 export const CloseIcon = createIcon(
   <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M4 4L12 12M12 4L4 12" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+  </svg>
+);
+
+export const PagesIcon = createIcon(
+  <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect
+      x="3.4"
+      y="2.4"
+      width="9.2"
+      height="11.2"
+      rx="1.6"
+      stroke="currentColor"
+      strokeWidth="1.25"
+    />
+    <path
+      d="M6 5.4H10M6 8H10M6 10.6H8.6"
+      stroke="currentColor"
+      strokeWidth="1.15"
+      strokeLinecap="round"
+    />
+  </svg>
+);
+
+export const LayersIcon = createIcon(
+  <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path
+      d="M8 2.4L13.4 5.2L8 8L2.6 5.2L8 2.4Z"
+      stroke="currentColor"
+      strokeWidth="1.25"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M3.4 8L8 10.3L12.6 8"
+      stroke="currentColor"
+      strokeWidth="1.25"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M3.4 10.7L8 13L12.6 10.7"
+      stroke="currentColor"
+      strokeWidth="1.25"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+export const AssetsIcon = createIcon(
+  <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect
+      x="2.4"
+      y="3.4"
+      width="11.2"
+      height="9.2"
+      rx="1.6"
+      stroke="currentColor"
+      strokeWidth="1.25"
+    />
+    <circle cx="6" cy="6.6" r="1.1" stroke="currentColor" strokeWidth="1.15" />
+    <path
+      d="M3.4 11.2L6.8 8.2L9.2 10.2L11 8.6L12.6 10.1"
+      stroke="currentColor"
+      strokeWidth="1.2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+export const PlusIcon = createIcon(
+  <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path
+      d="M8 3.2V12.8M3.2 8H12.8"
+      stroke="currentColor"
+      strokeWidth="1.35"
+      strokeLinecap="round"
+    />
+  </svg>
+);
+
+export const ShareIcon = createIcon(
+  <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="12" cy="3.8" r="1.7" stroke="currentColor" strokeWidth="1.2" />
+    <circle cx="4" cy="8" r="1.7" stroke="currentColor" strokeWidth="1.2" />
+    <circle cx="12" cy="12.2" r="1.7" stroke="currentColor" strokeWidth="1.2" />
+    <path
+      d="M5.5 7.1L10.5 4.7M5.5 8.9L10.5 11.3"
+      stroke="currentColor"
+      strokeWidth="1.2"
+      strokeLinecap="round"
+    />
+  </svg>
+);
+
+export const UserIcon = createIcon(
+  <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="8" cy="8" r="5.6" stroke="currentColor" strokeWidth="1.2" />
+    <circle cx="8" cy="6.3" r="1.9" stroke="currentColor" strokeWidth="1.15" />
+    <path
+      d="M4.5 12.1C5.2 10.5 6.5 9.7 8 9.7C9.5 9.7 10.8 10.5 11.5 12.1"
+      stroke="currentColor"
+      strokeWidth="1.15"
+      strokeLinecap="round"
+    />
+  </svg>
+);
+
+export const ZenIcon = createIcon(
+  <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path
+      d="M6.2 2.8H2.8V6.2M9.8 2.8H13.2V6.2M6.2 13.2H2.8V9.8M9.8 13.2H13.2V9.8"
+      stroke="currentColor"
+      strokeWidth="1.25"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+export const SlidersIcon = createIcon(
+  <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path
+      d="M2.6 4.4H13.4M2.6 8H13.4M2.6 11.6H13.4"
+      stroke="currentColor"
+      strokeWidth="1.2"
+      strokeLinecap="round"
+    />
+    <circle
+      cx="5.8"
+      cy="4.4"
+      r="1.5"
+      fill="var(--island-bg-color, #fff)"
+      stroke="currentColor"
+      strokeWidth="1.2"
+    />
+    <circle
+      cx="10.4"
+      cy="8"
+      r="1.5"
+      fill="var(--island-bg-color, #fff)"
+      stroke="currentColor"
+      strokeWidth="1.2"
+    />
+    <circle
+      cx="6.8"
+      cy="11.6"
+      r="1.5"
+      fill="var(--island-bg-color, #fff)"
+      stroke="currentColor"
+      strokeWidth="1.2"
+    />
   </svg>
 );

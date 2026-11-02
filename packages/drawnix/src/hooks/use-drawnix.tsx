@@ -71,6 +71,74 @@ export type LinkState = {
   isHoveringOrigin: boolean;
 };
 
+export type LeftPanelTab = 'file' | 'layers' | 'assets';
+
+export type ContextPanelTab = 'properties';
+
+export type DrawnixSaveState = 'local' | 'saving' | 'saved' | 'conflict' | 'error';
+
+export type DrawnixLayoutState = {
+  leftPanelOpen: boolean;
+  leftPanelTab: LeftPanelTab;
+  leftPanelWidth: number;
+  contextPanelOpen: boolean;
+  contextPanelTab: ContextPanelTab;
+  contextPanelWidth: number;
+  toolbarCollapsed: boolean;
+  agentOpen: boolean;
+  uiHidden: boolean;
+};
+
+export const LEFT_PANEL_WIDTH_MIN = 200;
+export const LEFT_PANEL_WIDTH_MAX = 420;
+export const LEFT_PANEL_WIDTH_DEFAULT = 260;
+export const CONTEXT_PANEL_WIDTH_MIN = 260;
+export const CONTEXT_PANEL_WIDTH_MAX = 480;
+export const CONTEXT_PANEL_WIDTH_DEFAULT = 320;
+
+export const clampPanelWidth = (width: number, min: number, max: number) => {
+  if (!Number.isFinite(width)) {
+    return min;
+  }
+  return Math.min(max, Math.max(min, Math.round(width)));
+};
+
+export const createDefaultLayoutState = (isMobile: boolean): DrawnixLayoutState => ({
+  leftPanelOpen: !isMobile,
+  leftPanelTab: 'file',
+  leftPanelWidth: LEFT_PANEL_WIDTH_DEFAULT,
+  contextPanelOpen: false,
+  contextPanelTab: 'properties',
+  contextPanelWidth: CONTEXT_PANEL_WIDTH_DEFAULT,
+  toolbarCollapsed: false,
+  agentOpen: false,
+  uiHidden: false,
+});
+
+export const mergeLayoutState = (
+  isMobile: boolean,
+  layout?: Partial<DrawnixLayoutState> | null
+): DrawnixLayoutState => {
+  const defaults = createDefaultLayoutState(isMobile);
+  return {
+    ...defaults,
+    ...layout,
+    contextPanelTab: 'properties',
+    toolbarCollapsed: Boolean(layout?.toolbarCollapsed),
+    agentOpen: false,
+    leftPanelWidth: clampPanelWidth(
+      layout?.leftPanelWidth ?? defaults.leftPanelWidth,
+      LEFT_PANEL_WIDTH_MIN,
+      LEFT_PANEL_WIDTH_MAX
+    ),
+    contextPanelWidth: clampPanelWidth(
+      layout?.contextPanelWidth ?? defaults.contextPanelWidth,
+      CONTEXT_PANEL_WIDTH_MIN,
+      CONTEXT_PANEL_WIDTH_MAX
+    ),
+  };
+};
+
 export type DrawnixState = {
   toolState: DrawnixToolState;
   isMobile: boolean;
@@ -78,11 +146,13 @@ export type DrawnixState = {
   fileHandle: DrawnixFileHandle;
   openDialogType: DialogType | null;
   openCleanConfirm: boolean;
-  agentPanelOpen: boolean;
+  layout: DrawnixLayoutState;
   copyTransparent: boolean;
   exportTransparent: boolean;
   linkState?: LinkState | null;
 };
+
+export const isAgentPanelOpen = (state: Pick<DrawnixState, 'layout'>) => state.layout.agentOpen;
 
 export const DrawnixContext = createContext<{
   appState: DrawnixState;

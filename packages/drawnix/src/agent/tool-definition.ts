@@ -1,35 +1,11 @@
+import { AGENT_TOOL_DEFINITIONS } from './tools/registry';
 import type { AgentDiagramFormat } from './types';
 
 export const CREATE_DIAGRAM_TOOL_NAME = 'create_diagram';
 
-export const CREATE_DIAGRAM_TOOL_DEFINITION = {
-  type: 'function',
-  function: {
-    name: CREATE_DIAGRAM_TOOL_NAME,
-    description:
-      'Create a diagram and insert it into the current whiteboard. Use Mermaid for processes, flows, systems and sequences. Use Markdown for mind maps and hierarchical outlines.',
-    parameters: {
-      type: 'object',
-      properties: {
-        format: {
-          type: 'string',
-          enum: ['mermaid', 'markdown'],
-          description: 'The source syntax used to generate the diagram.',
-        },
-        content: {
-          type: 'string',
-          description: 'Valid Mermaid or Markdown source. Do not wrap the source in a code fence.',
-        },
-        title: {
-          type: 'string',
-          description: 'A short human-readable title for the inserted diagram.',
-        },
-      },
-      required: ['format', 'content'],
-      additionalProperties: false,
-    },
-  },
-} as const;
+export const CREATE_DIAGRAM_TOOL_DEFINITION = AGENT_TOOL_DEFINITIONS.find(
+  (definition) => definition.function.name === CREATE_DIAGRAM_TOOL_NAME
+)!;
 
 export type ParsedCreateDiagramArguments = {
   format: AgentDiagramFormat;

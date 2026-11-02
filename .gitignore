@@ -8,6 +8,11 @@ tmp
 # dependencies
 node_modules
 
+# local env files
+.env
+.env.local
+!.env.example
+
 # IDEs and editors
 /.idea
 .project
@@ -24,7 +29,12 @@ node_modules
 !.vscode/launch.json
 !.vscode/extensions.json
 
+# local runtime data
+/data/
+apps/api/data/
+
 # misc
+/.playwright-mcp/
 /.sass-cache
 /connect.lock
 /coverage
@@ -43,3 +53,4 @@ Thumbs.db
 
 .claude/worktrees
 .claude/settings.local.json
+

@@ -1,19 +1,27 @@
-FROM node:20 AS builder 
+FROM node:22 AS builder
 
 WORKDIR /builder
 
 COPY . /builder
 
-RUN npm install \
-    && npm run build 
+RUN npm ci \
+    && npm run build \
+    && npm prune --omit=dev
 
+FROM node:22-slim AS runner
 
-FROM lipanski/docker-static-website:2.6.0
+WORKDIR /app
 
-WORKDIR /home/static
+ENV NODE_ENV=production \
+    PORT=8080 \
+    HOST=0.0.0.0 \
+    WEB_DIST_DIR=/app/dist/apps/web
 
-COPY  --from=builder /builder/dist/apps/web/  /home/static
+COPY --from=builder /builder/package.json ./package.json
+COPY --from=builder /builder/node_modules ./node_modules
+COPY --from=builder /builder/dist/apps/api ./dist/apps/api
+COPY --from=builder /builder/dist/apps/web ./dist/apps/web
 
-EXPOSE 80
+EXPOSE 8080
 
-CMD ["/busybox-httpd", "-f", "-v", "-p", "80", "-c", "httpd.conf"]
+CMD ["node", "dist/apps/api/main.js"]

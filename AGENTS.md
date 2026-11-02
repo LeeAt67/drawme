@@ -24,12 +24,13 @@ DrawMe 是一个基于 [Plait](https://github.com/worktile/plait) 画图框架�
 - **Plugin**：形如 `(board: PlaitBoard) => PlaitBoard` 的高阶函数。所有交互能力（绘制、框选、快捷键、图片、手写笔、工具态同步）都是插件叠加的结果，顺序在 `Drawnix` 组件里显式声明。
 - **appState**：Drawnix 自己的应用态（`DrawnixState`），与 board 是**双向**关系：board 变化会经插件回写 `toolState`，`appState` 变化又会写回 `board.appState`。详见 [packages/drawnix/src/AGENTS.md](packages/drawnix/src/AGENTS.md)。
 - **ToolState**：当前工具（手形 / 选择 / 思维导图 / 文本 / 画笔 / 箭头 / 形状），以及"上一次用的形状/箭头/笔刷"与笔刷预设。
-- **Agent**：浏览器直连 OpenAI 兼容接口的对话式画图助手，通过函数调用工具 `create_diagram` 把 Mermaid / Markdown 转成画布元素。
+- **AuthSession**：整个项目的登录态，不属于 Agent。顶栏账户区打开 `AuthDialog`，会话是 `apps/api` 签发的 HttpOnly Cookie；`packages/drawnix/src/auth` 提供全局单例 store 与 `useAuthSession()`。
+- **Agent**：复用项目级会话，调用同源 `/api/agent/*`；`apps/api`（Fastify）校验会话、代理 OpenAI 兼容接口并持有密钥，通过函数调用工具 `create_diagram` 把 Mermaid / Markdown 转成画布元素。
 
 ## 状态管理
 
 - 无 Redux / MobX。全局态是 React Context：`DrawnixContext`（应用态）+ `I18nContext`（语言）+ `BoardContext`（board 与 listRender）。
-- 持久化由**宿主应用**负责，不在库内：`apps/web` 用 `localforage` 存画布内容、工具态、偏好；Agent 配置单独存 `localStorage`。
+- 持久化由**宿主应用**负责，不在库内：`apps/web` 用 `localforage` 存画布内容、工具态、偏好；Agent 的模型配置在服务端环境变量中，浏览器只读 `/api/agent/config`。项目登录态由 `apps/api` 的 HttpOnly Cookie 会话维护，`src/auth` 只保存用户信息的只读快照，不写入 `localStorage`。
 
 ## 功能页面
 
@@ -48,7 +49,9 @@ DrawMe 是一个基于 [Plait](https://github.com/worktile/plait) 画图框架�
 Agent 链路独立于上述链路，只共用 `board.insertFragment`：
 
 ```
-输入框 → runAgentTurn（OpenAI 兼容 /chat/completions）
+顶栏登录 / AuthDialog → POST /api/auth/login → HttpOnly 会话 Cookie
+输入框 → runAgentTurn（同源 POST /api/agent/chat，自动携带 Cookie）
+       → apps/api 注入 model/tools 并代理上游 /chat/completions
        → 模型返回 tool_calls(create_diagram)
        → parseCreateDiagramArguments → parseDiagramElements
        → board.insertFragment 插入元素
@@ -63,6 +66,7 @@ Agent 链路独立于上述链路，只共用 `board.insertFragment`：
 │   │   ├── index.html          # SEO meta / JSON-LD
 │   │   ├── public/             # 静态资源、_headers、_redirects
 │   │   └── src/                # 入口、App 页面
+│   ├── api/                    # Fastify BFF（认证 + Agent 代理；后续文档/协作模块）
 │   └── web-e2e/                # Playwright 测试
 ├── packages/
 │   ├── drawnix/                # 白板应用库（业务主体）
@@ -80,6 +84,7 @@ Agent 链路独立于上述链路，只共用 `board.insertFragment`：
 - [packages/drawnix/AGENTS.md](packages/drawnix/AGENTS.md) — 白板业务模块
 - [packages/drawnix/src/AGENTS.md](packages/drawnix/src/AGENTS.md) — 入口组件与插件装配
 - [packages/drawnix/src/agent/AGENTS.md](packages/drawnix/src/agent/AGENTS.md) — DrawMe Agent
+- [packages/drawnix/src/auth/AGENTS.md](packages/drawnix/src/auth/AGENTS.md) — 项目级登录与会话
 - [packages/react-board/AGENTS.md](packages/react-board/AGENTS.md) — 渲染层
 - [packages/react-text/AGENTS.md](packages/react-text/AGENTS.md) — 文本层
 - [scripts/AGENTS.md](scripts/AGENTS.md) — 版本脚本
@@ -87,6 +92,8 @@ Agent 链路独立于上述链路，只共用 `board.insertFragment`：
 ## 技术栈
 
 - **框架**：React 19.2、TypeScript ~6.0、Vite 8、Nx 22.6
+- **后端**：Fastify 5、zod、tsx（开发热重载）、Node 22 原生 fetch
+- **认证**：`@fastify/cookie`、Node scrypt、内存会话存储（重启失效）
 - **画图内核**：`@plait/core`、`@plait/common`、`@plait/draw`、`@plait/mind`、`@plait/text-plugins`（0.94.x）
 - **富文本**：Slate 0.116 + slate-react + slate-history
 - **浮层/交互**：`@floating-ui/react` 0.26
@@ -96,10 +103,13 @@ Agent 链路独立于上述链路，只共用 `board.insertFragment`：
 
 ## 开发规范
 
-- 命令：`npm run start`（7200）、`npm run build`、`npm run build:web`、`npm test`、`npm run lint`、`npm run format`。
+- 命令：`npm run start`（7200）、`npm run start:api`（8787）、`npm run start:all`、`npm run build`、`npm run build:web`、`npm run build:api`、`npm test`、`npm run lint`、`npm run format`。
 - 新增面向用户的文案必须同时补 5 种语言（`zh/en/ru/ar/vi`），键名加到 `i18n/types.ts` 的 `Translations`，否则 `t()` 会回退成键名本身。
 - 主题色不要写死，使用 `--color-*` / `--island-*` CSS 变量，否则深色主题会失效。
 - 画布内部坐标与屏幕坐标必须经 `toViewBoxPoint` / `toHostPoint` 转换，直接使用 `event.clientX` 会导致缩放后定位错乱。
+- Agent 相关请求必须携带同源 Cookie；不要在前端保存或发送 API Key，也不要把会话令牌写入 `localStorage`。
+- 登录入口只保留一个：顶栏账户区 + `AuthDialog`；其他模块通过 `openAuthDialog()` 触发，不要各自实现登录表单。
+- 后端 `GET /api/auth/providers` 公开返回可用 OAuth 方式；OAuth 回调成功后必须复用同一套 HttpOnly 会话，client secret 只放服务端环境变量。
 - 修改 `packages/*/src` 的公共 API 时同步检查 `tsconfig.base.json` 与各 `vite.config.ts` 的 `external` 列表。
 
 

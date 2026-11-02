@@ -99,7 +99,7 @@ styles/
 
 - [../AGENTS.md](../AGENTS.md)
 - [../components/toolbar/AGENTS.md](../components/toolbar/AGENTS.md) — 被定位的组件
-- [../agent/AGENTS.md](../agent/AGENTS.md) — `.agent-panel` 自带独立样式（不在本目录）
+- [../agent/AGENTS.md](../agent/AGENTS.md) — `.dx-agent` 输入框自带独立样式（不在本目录）；`.dx-toolbar-ball` 是底部工具栏收起后的球，定位在 `components/shell/app-shell.scss`
 
 ## 技术栈
 

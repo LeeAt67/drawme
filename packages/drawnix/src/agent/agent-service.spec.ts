@@ -1,54 +1,42 @@
 import { describe, expect, it, vi } from 'vitest';
 import { runAgentTurn } from './agent-service';
-import type { AgentProviderConfig } from './types';
-
-const config: AgentProviderConfig = {
-  baseUrl: 'https://api.example.com/v1',
-  apiKey: 'test-key',
-  model: 'test-model',
-};
+import { AGENT_CHAT_ENDPOINT } from './config';
 
 const createJsonResponse = (body: unknown, status = 200) =>
   ({
     ok: status >= 200 && status < 300,
     status,
-    json: async () => body,
     text: async () => JSON.stringify(body),
   }) as unknown as Response;
 
+const createDirectResponse = (content: string) =>
+  createJsonResponse({ message: { role: 'assistant', content } });
+
 const createToolCallResponse = (argumentsValue: Record<string, unknown>) =>
   createJsonResponse({
-    choices: [
-      {
-        message: {
-          content: '',
-          tool_calls: [
-            {
-              id: 'call-1',
-              type: 'function',
-              function: {
-                name: 'create_diagram',
-                arguments: JSON.stringify(argumentsValue),
-              },
-            },
-          ],
+    message: {
+      role: 'assistant',
+      content: '',
+      tool_calls: [
+        {
+          id: 'call-1',
+          type: 'function',
+          function: {
+            name: 'create_diagram',
+            arguments: JSON.stringify(argumentsValue),
+          },
         },
-      },
-    ],
+      ],
+    },
   });
 
 describe('runAgentTurn', () => {
   it('returns a direct assistant response without calling tools', async () => {
-    const fetchMock = vi.fn().mockResolvedValueOnce(
-      createJsonResponse({
-        choices: [{ message: { content: 'I can help with that.' } }],
-      })
-    );
+    const fetchMock = vi.fn().mockResolvedValueOnce(createDirectResponse('I can help with that.'));
     const executeTool = vi.fn();
     const onProgress = vi.fn();
 
     const result = await runAgentTurn({
-      config,
       systemPrompt: 'system prompt',
       history: [{ role: 'user', content: 'hello' }],
       executeTool,
@@ -63,24 +51,32 @@ describe('runAgentTurn', () => {
     expect(executeTool).not.toHaveBeenCalled();
     expect(onProgress).toHaveBeenCalledWith('I can help with that.');
     expect(fetchMock).toHaveBeenCalledTimes(1);
-
-    const [endpoint, request] = fetchMock.mock.calls[0] as [string, RequestInit];
-    expect(endpoint).toBe('https://api.example.com/v1/chat/completions');
-    expect(request.headers).toEqual({
-      'Content-Type': 'application/json',
-      Authorization: 'Bearer test-key',
-    });
-
-    const requestBody = JSON.parse(String(request.body));
-    expect(requestBody.model).toBe('test-model');
-    expect(requestBody.messages).toEqual([
-      { role: 'system', content: 'system prompt' },
-      { role: 'user', content: 'hello' },
-    ]);
-    expect(requestBody.tools[0].function.name).toBe('create_diagram');
   });
 
-  it('executes a tool call and sends the tool result back to the model', async () => {
+  it('posts messages to the same-origin agent endpoint without credentials', async () => {
+    const fetchMock = vi.fn().mockResolvedValueOnce(createDirectResponse('ok'));
+
+    await runAgentTurn({
+      systemPrompt: 'system prompt',
+      history: [{ role: 'user', content: 'hello' }],
+      executeTool: vi.fn(),
+      fetchImpl: fetchMock as unknown as typeof fetch,
+    });
+
+    const [url, init] = fetchMock.mock.calls[0] as [string, RequestInit];
+    expect(url).toBe(AGENT_CHAT_ENDPOINT);
+    expect(init.method).toBe('POST');
+    expect(init.headers).toEqual({ 'Content-Type': 'application/json' });
+    expect(JSON.parse(String(init.body))).toEqual({
+      tool_choice: 'auto',
+      messages: [
+        { role: 'system', content: 'system prompt' },
+        { role: 'user', content: 'hello' },
+      ],
+    });
+  });
+
+  it('executes create_diagram tool calls and feeds the result back to the model', async () => {
     const fetchMock = vi
       .fn()
       .mockResolvedValueOnce(
@@ -89,11 +85,7 @@ describe('runAgentTurn', () => {
           content: 'flowchart TD\n A --> B',
         })
       )
-      .mockResolvedValueOnce(
-        createJsonResponse({
-          choices: [{ message: { content: 'The flow is on the board.' } }],
-        })
-      );
+      .mockResolvedValueOnce(createDirectResponse('The flow is on the board.'));
     const executeTool = vi.fn().mockResolvedValue({
       ok: true,
       summary: 'Diagram inserted',
@@ -101,7 +93,6 @@ describe('runAgentTurn', () => {
     });
 
     const result = await runAgentTurn({
-      config,
       systemPrompt: 'system prompt',
       history: [{ role: 'user', content: 'draw a flow' }],
       executeTool,
@@ -146,11 +137,7 @@ describe('runAgentTurn', () => {
     const fetchMock = vi
       .fn()
       .mockResolvedValueOnce(createToolCallResponse({ format: 'mermaid', content: 'bad' }))
-      .mockResolvedValueOnce(
-        createJsonResponse({
-          choices: [{ message: { content: 'The diagram could not be inserted.' } }],
-        })
-      );
+      .mockResolvedValueOnce(createDirectResponse('The diagram could not be inserted.'));
     const executeTool = vi.fn().mockResolvedValue({
       ok: false,
       summary: 'Diagram insertion failed',
@@ -158,7 +145,6 @@ describe('runAgentTurn', () => {
     });
 
     const result = await runAgentTurn({
-      config,
       systemPrompt: 'system prompt',
       history: [{ role: 'user', content: 'draw a flow' }],
       executeTool,
@@ -174,31 +160,23 @@ describe('runAgentTurn', () => {
       .fn()
       .mockResolvedValueOnce(
         createJsonResponse({
-          choices: [
-            {
-              message: {
-                content: '',
-                tool_calls: [
-                  {
-                    id: 'call-unknown',
-                    type: 'function',
-                    function: { name: 'delete_board', arguments: '{}' },
-                  },
-                ],
+          message: {
+            role: 'assistant',
+            content: '',
+            tool_calls: [
+              {
+                id: 'call-unknown',
+                type: 'function',
+                function: { name: 'delete_board', arguments: '{}' },
               },
-            },
-          ],
+            ],
+          },
         })
       )
-      .mockResolvedValueOnce(
-        createJsonResponse({
-          choices: [{ message: { content: 'I cannot do that.' } }],
-        })
-      );
+      .mockResolvedValueOnce(createDirectResponse('I cannot do that.'));
     const executeTool = vi.fn();
 
     const result = await runAgentTurn({
-      config,
       systemPrompt: 'system prompt',
       history: [{ role: 'user', content: 'delete it' }],
       executeTool,
@@ -224,7 +202,6 @@ describe('runAgentTurn', () => {
     });
 
     const result = await runAgentTurn({
-      config,
       systemPrompt: 'system prompt',
       history: [{ role: 'user', content: 'loop' }],
       executeTool,
@@ -238,14 +215,15 @@ describe('runAgentTurn', () => {
     expect(result.content).toContain('已连续调用多轮工具');
   });
 
-  it('surfaces API error messages', async () => {
+  it('surfaces API error messages from the proxy', async () => {
     const fetchMock = vi
       .fn()
-      .mockResolvedValueOnce(createJsonResponse({ error: { message: 'Invalid API key' } }, 401));
+      .mockResolvedValueOnce(
+        createJsonResponse({ error: { code: 'upstream_error', message: 'Invalid API key' } }, 401)
+      );
 
     await expect(
       runAgentTurn({
-        config,
         systemPrompt: 'system prompt',
         history: [{ role: 'user', content: 'hello' }],
         executeTool: vi.fn(),
@@ -254,18 +232,16 @@ describe('runAgentTurn', () => {
     ).rejects.toThrow('Invalid API key');
   });
 
-  it('rejects requests when the endpoint is not configured', async () => {
-    const fetchMock = vi.fn();
+  it('rejects an empty assistant message', async () => {
+    const fetchMock = vi.fn().mockResolvedValueOnce(createJsonResponse({}));
 
     await expect(
       runAgentTurn({
-        config: { ...config, baseUrl: '   ' },
         systemPrompt: 'system prompt',
         history: [{ role: 'user', content: 'hello' }],
         executeTool: vi.fn(),
         fetchImpl: fetchMock as unknown as typeof fetch,
       })
-    ).rejects.toThrow('not configured');
-    expect(fetchMock).not.toHaveBeenCalled();
+    ).rejects.toThrow('The model returned an empty response.');
   });
 });

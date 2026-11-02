@@ -8,9 +8,10 @@
 
 ## 概览
 
-`apps/` 只放**可运行的应用**，不放可复用逻辑。当前有两个 Nx 项目：
+`apps/` 只放**可运行的应用**，不放可复用逻辑。当前有三个 Nx 项目：
 
 - `web`：唯一的浏览器应用。职责是"宿主"——初始化画布、把用户数据持久化到浏览器、提供入口 HTML 与静态资源。它**不含**任何画图/Agent 业务逻辑。
+- `api`：Fastify 后端（端口 8787）。当前承担 Agent BFF（持有 `AGENT_API_KEY`、注入 `model/tools`、限流），按模块化单体组织，后续承载账号、文档、分享、计费与实时协作。
 - `web-e2e`：Playwright 端到端测试工程，通过 `BASE_URL`（默认 `http://localhost:7200`）驱动 `web`。
 
 这种切分的意义：`packages/*` 是纯库，不认识 `localforage`、不认识路由；换一个宿主（比如 Electron 壳、SaaS 后端版）时只替换 `apps/` 层即可。
@@ -18,13 +19,13 @@
 ## 相关概念
 
 - **宿主职责边界**：库只暴露 `Drawnix` 组件与回调；"存哪里、存什么、默认语言是什么"全部由 `apps/web` 决定。
-- **Nx 目标**：`web` 提供 `serve` / `build` / `test` / `preview`，由 `@nx/vite`、`@nx/vitest` 插件自动推断，`project.json` 里没有手写 targets。
+- **Nx 目标**：`web` 提供 `serve` / `build` / `test` / `preview`，由 `@nx/vite`、`@nx/vitest` 插件自动推断，`project.json` 里没有手写 targets；`api` 在 `project.json` 中手写 `serve` / `build` / `start`，测试由 `vitest.config.ts` 推断。
 - **workspaceRoot**：`web-e2e` 的 `playwright.config.ts` 用 `@nx/devkit` 的 `workspaceRoot` 作为 `webServer.cwd`，保证从仓库根启动 dev server。
 
 ## 状态管理
 
 - `apps/web` 的持久化键（`localforage`）：`main_board_content`（画布）、`main_board_tool_state`（当前工具）、`main_board_preference`（语言与透明背景偏好）。
-- Agent 的模型配置**不在**这里，由库内部写入 `localStorage` 的 `drawme.agent.provider`。
+- Agent 的模型配置**不在**浏览器：`apps/api` 从环境变量读取，前端只请求 `/api/agent/config` 获取 `{ configured, model }`。
 
 ## 功能页面
 
@@ -46,12 +47,22 @@ index.html (meta/JSON-LD)
 
 ## 服务和工具
 
-- 无独立服务层。唯一的外部依赖是 `localforage`（IndexedDB 优先，降级 localStorage）。
+- `apps/api` 是唯一服务端进程；开发时 Vite 把 `/api` 代理到 API 端口，生产时可用 `WEB_DIST_DIR` 让 API 直接托管前端构建产物。
+- 浏览器侧唯一持久化依赖是 `localforage`（IndexedDB 优先，降级 localStorage）。
 
 ## 模块结构
 
 ```
 apps/
+├── api/
+│   ├── .env.example        # AGENT_API_KEY / AGENT_MODEL / PORT 等
+│   ├── project.json        # serve=tsx watch, build=tsc, start=node dist
+│   └── src/
+│       ├── main.ts         # 加载 .env 并监听
+│       ├── app.ts          # Fastify 装配、静态托管、SPA fallback
+│       ├── config.ts       # 环境变量解析
+│       ├── shared/         # 统一错误
+│       └── modules/agent/  # 路由 + zod 校验 + 上游代理
 ├── web/
 │   ├── index.html          # 入口 HTML，含 SEO/OG/JSON-LD
 │   ├── project.json        # Nx 项目声明（targets 由插件推断）
@@ -81,6 +92,7 @@ apps/
 ## 技术栈
 
 - Vite 8 + `@vitejs/plugin-react`
+- Fastify 5 + zod（`apps/api`）
 - `localforage`（持久化）
 - Playwright（`@playwright/test`）三浏览器：chromium / firefox / webkit
 

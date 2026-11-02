@@ -5,15 +5,22 @@
   "license": "MIT",
   "scripts": {
     "start": "nx serve web --host=0.0.0.0",
+    "start:api": "nx serve api",
+    "start:all": "nx run-many -t=serve --projects=web,api --parallel=2",
     "build": "nx run-many -t=build",
     "lint": "oxlint",
     "format": "oxfmt",
     "format:check": "oxfmt --check",
     "build:web": "nx build web",
+    "build:api": "nx build api",
     "test": "nx run-many -t=test",
+    "sync:agent-tools": "node --import tsx scripts/sync-agent-tools.mjs",
     "release": "node scripts/release-version.js"
   },
   "dependencies": {
+    "@fastify/cookie": "^11.1.5",
+    "@fastify/rate-limit": "^11.2.1",
+    "@fastify/static": "^10.1.8",
     "@floating-ui/react": "^0.26.24",
     "@plait-board/markdown-to-drawnix": "^0.0.8",
     "@plait-board/mermaid-to-drawnix": "^0.0.8",
@@ -26,6 +33,7 @@
     "ahooks": "^3.9.7",
     "browser-fs-access": "^0.38.0",
     "classnames": "^2.5.1",
+    "fastify": "^5.12.7",
     "is-hotkey": "^0.2.0",
     "laser-pen": "^1.0.1",
     "localforage": "^1.10.0",
@@ -37,7 +45,8 @@
     "slate-dom": "^0.116.0",
     "slate-history": "^0.115.0",
     "slate-react": "^0.116.0",
-    "tslib": "^2.3.0"
+    "tslib": "^2.3.0",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@babel/core": "^7.14.5",
@@ -71,6 +80,7 @@
     "oxlint": "^1.61.0",
     "sass": "^1.101.0",
     "ts-node": "10.9.1",
+    "tsx": "^4.23.15",
     "typescript": "~6.0.3",
     "vite": "^8.0.16",
     "vite-plugin-dts": "^4.5.3",

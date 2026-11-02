@@ -6,7 +6,7 @@ import type {
   SetupTestingBoardOptions,
   TestingBoardFixture,
 } from '@plait/core';
-import { mergeToolState } from '../src/hooks/use-drawnix';
+import { mergeLayoutState, mergeToolState } from '../src/hooks/use-drawnix';
 import type {
   DrawnixBoard,
   DrawnixPointerType,
@@ -38,7 +38,7 @@ const createTestingAppState = (overrides: DrawnixTestingAppStateOverrides = {}):
     fileHandle: null,
     openDialogType: null,
     openCleanConfirm: false,
-    agentPanelOpen: false,
+    layout: mergeLayoutState(false),
     copyTransparent: false,
     exportTransparent: false,
     ...stateOverrides,
